@@ -5,7 +5,8 @@ import {
   DefaultSession,
 } from "next-auth";
 import { type JWT } from "next-auth/jwt";
-import { UserRole } from "~/server/db/schemas/users/user-accounts";
+import { emailVerifiedByID } from "~/server/data/user";
+import { UserRole } from "~/server/db/schemas/users/user-account";
 
 declare module "next-auth/jwt" {
   interface JWT {
@@ -45,5 +46,12 @@ export async function signInCallback({
   user: User;
   account: Account | null;
 }) {
+  if (account?.provider !== "credentials") return true;
+  if (!user || !user.id) return false;
+  // make sure that the user has verified their email
+  //if (!(await emailVerifiedByID(user.id))) return false;
+
+  //@TODO check if they have two factor authentication
+
   return true;
 }

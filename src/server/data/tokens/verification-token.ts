@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, lt } from "drizzle-orm";
+import { and, eq, lt, or } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "~/server/db";
 import { token } from "~/server/db/schemas/";
@@ -13,8 +13,10 @@ import { TokenType } from "~/server/db/schemas/users/user-token";
 export async function getVerificationTokenIdByEmail(email: string) {
   try {
     const result = await db.query.token.findFirst({
-      where:
-        eq(token.email, email) && eq(token.type, TokenType.VERIFY_EMAIL_TOKEN),
+      where: and(
+        eq(token.email, email),
+        eq(token.type, TokenType.VERIFY_EMAIL_TOKEN),
+      ),
     });
     if (!result) return null;
     return result.id;
@@ -31,17 +33,34 @@ export async function getVerificationTokenIdByEmail(email: string) {
 export async function getVerificationTokenIdByToken(tokenNum: string) {
   try {
     const result = await db.query.token.findFirst({
-      where:
-        eq(token.value, tokenNum) &&
+      where: and(
+        eq(token.value, tokenNum),
         eq(token.type, TokenType.VERIFY_EMAIL_TOKEN),
+      ),
     });
     if (!result) return null;
+
     return result.id;
   } catch (e) {
     return null;
   }
 }
 
+export async function getVerificationTokenByToken(tokenNum: string) {
+  try {
+    console.log(tokenNum);
+    const result = await db.query.token.findFirst({
+      where: and(
+        eq(token.value, tokenNum),
+        eq(token.type, TokenType.VERIFY_EMAIL_TOKEN),
+      ),
+    });
+    if (!result) return null;
+    return result;
+  } catch (e) {
+    return null;
+  }
+}
 /**
  * Generate a new Verification token and store it in the database. Remove any existing tokens for the email.
  * @param email
@@ -78,7 +97,9 @@ export async function removeVerificationToken(tokenId: string) {
   await db
     .delete(token)
     .where(
-      eq(token.type, TokenType.VERIFY_EMAIL_TOKEN) &&
-        (eq(token.id, tokenId) || lt(token.expires, new Date())),
+      and(
+        eq(token.type, TokenType.VERIFY_EMAIL_TOKEN),
+        or(eq(token.id, tokenId), lt(token.expires, new Date())),
+      ),
     );
 }

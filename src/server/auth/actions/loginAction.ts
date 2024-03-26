@@ -29,7 +29,7 @@ export const loginAction = async (
     };
 
   // send email verification
-  if (!(await isUserEmailVerified(email))) return getVerifiedEmail(email);
+  if (!(await isUserEmailVerified(email))) return await getVerifiedEmail(email);
 
   // check for 2fa
 
@@ -51,11 +51,13 @@ export const loginAction = async (
             success: false,
             message: "Invalid credentials",
           };
+        default:
+          return {
+            success: false,
+            message: "An unknown error occurred",
+          };
       }
     }
-    return {
-      success: false,
-      message: "An unknown error occurred",
-    };
+    throw error;
   }
 };

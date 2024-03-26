@@ -65,7 +65,8 @@ export async function signInCallback({
 }) {
   if (account?.provider !== "credentials") return true;
   if (!user || !user.id || !user.email) return false;
-  if (!(await isUserEmailVerified(user.email))) return false;
+  const emailVerified = await isUserEmailVerified(user.email);
+  if (!emailVerified) return false;
 
   //@TODO check if they have two factor authentication
 

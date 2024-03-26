@@ -32,7 +32,6 @@ export const getUserById = async (id: string) => {
 };
 
 /**
- *  Getter for the user by email.
  * @param email
  * @returns boolean
  */
@@ -109,4 +108,28 @@ export const emailVerifiedByID = async (id: string) => {
   if (!user || !user.emailVerified) return false;
 
   return true;
+};
+
+/**
+ * verify the users email address.
+ *
+ * @param email
+ * @returns the database response.
+ */
+
+export const VerifyUserEmail = async (email: string) => {
+  const existingUser = await getUserByEmail(email);
+
+  if (existingUser?.emailVerified) {
+    return;
+  }
+
+  await db
+    .update(users)
+    .set({
+      emailVerified: new Date(),
+      email,
+      isTwoFactorEnabled: true,
+    })
+    .where(eq(users.email, email));
 };

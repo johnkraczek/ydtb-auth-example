@@ -1,0 +1,37 @@
+src/
+├── app
+│   ├── (auth)
+│   ├── (public)
+│   ├── api
+│   ├── settings
+│   ├── layout.tsx
+│   └── page.tsx
+├── client
+│   ├── components
+│   │   ├── auth
+│   │   ├── basic
+│   │   └── ui
+│   ├── hooks
+│   └── styles
+├── server
+│   ├── actions
+│   ├── auth
+│   │   ├── actions
+│   │   └── config
+│   ├── data
+│   ├── db
+│   │   ├── schemas
+│   │   ├── utils
+│   │   ├── index.ts
+│   │   └── schema.ts
+│   └── mail
+│       ├── config
+│       ├── emails
+│       └── services
+├── styles
+│   └── globals.css
+├── types
+├── validation
+│   └── auth
+└── env.js
+  

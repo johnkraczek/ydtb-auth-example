@@ -13,8 +13,8 @@ export const sendVerificationEmail = async ({
   email: string;
   validationCode: string;
 }) => {
-  const baseURL = `${env.NEXTAUTH_URL}`;
-  const validationLink = `${baseURL}/verify-email?token=${validationCode}`;
+  const baseURL = `${env.BASE_APP_URL}`;
+  const validationLink = `${env.BASE_APP_URL}/verify-email?token=${validationCode}`;
 
   const html = await render(VerifyEmail({ validationLink, baseURL }));
   return new Promise<{

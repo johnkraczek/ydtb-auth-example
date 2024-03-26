@@ -1,11 +1,12 @@
 "use server";
 import { z } from "zod";
-import { userExistsByEmail } from "~/server/data/user";
+import { isUserEmailVerified, userExistsByEmail } from "~/server/data/user";
 import { Result } from "~/types/result";
 import { LoginSchema } from "~/validation/auth";
 import { signIn } from "~/server/auth";
 import { AuthError } from "next-auth";
 import { DEFAULT_LOGIN_REDIRECT } from "../routes";
+import { getVerifiedEmail } from "./login-flow/send-email-verification";
 
 export const loginAction = async (
   values: z.infer<typeof LoginSchema>,
@@ -24,10 +25,11 @@ export const loginAction = async (
   if (!userExists)
     return {
       success: false,
-      message: "Email not found",
+      message: "Invalid Login",
     };
 
   // send email verification
+  if (!(await isUserEmailVerified(email))) return getVerifiedEmail(email);
 
   // check for 2fa
 

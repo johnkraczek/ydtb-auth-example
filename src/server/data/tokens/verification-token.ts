@@ -59,6 +59,7 @@ export async function generateVerificationToken(
   if (!newToken) throw new Error("Token generation failed");
 
   const expires = new Date(new Date().getTime() + 1000 * 3600);
+
   await db.insert(token).values({
     email,
     value: newToken,

@@ -27,6 +27,12 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string(),
     GITHUB_CLIENT_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),
+
+    SMTP_EMAIL_HOST: z.string(),
+    SMTP_EMAIL_PORT: z.string(),
+    SMTP_EMAIL_USER: z.string(),
+    SMTP_EMAIL_PASS: z.string(),
+    BASE_APP_URL: z.string()
   },
 
   /**
@@ -46,12 +52,17 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    BASE_APP_URL: process.env.BASE_APP_URL,
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+    SMTP_EMAIL_HOST: process.env.SMTP_EMAIL_HOST,
+    SMTP_EMAIL_PORT: process.env.SMTP_EMAIL_PORT,
+    SMTP_EMAIL_USER: process.env.SMTP_EMAIL_USER,
+    SMTP_EMAIL_PASS: process.env.SMTP_EMAIL_PASS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

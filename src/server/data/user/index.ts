@@ -16,8 +16,8 @@ export const getUserByEmail = async (email: string) => {
   if (!user) {
     return null;
   }
-  // return the user minus the hashedPassword, if you wanted to leave out other bits you could add them to the list.
-  //https://www.codemzy.com/blog/copying-object-without-property-javascript
+  // return the user minus the hashedPassword
+  // https://www.codemzy.com/blog/copying-object-without-property-javascript
   return (({ hashedPassword, ...user }) => user)(user);
 };
 
@@ -28,7 +28,6 @@ export const getUserById = async (id: string) => {
   if (!user) {
     return null;
   }
-
   return (({ hashedPassword, ...user }) => user)(user);
 };
 
@@ -50,6 +49,19 @@ export const userExistsByEmail = async (
   }
 
   return !!user;
+};
+
+/**
+ * Return boolean if the user has verified their email
+ * @param email
+ * @returns
+ */
+
+export const isUserEmailVerified = async (email: string) => {
+  const user = await db.query.users.findFirst({
+    where: eq(users.email, email),
+  });
+  return !(!user || !user.email || !user.emailVerified);
 };
 
 /**

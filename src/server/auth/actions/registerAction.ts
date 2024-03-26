@@ -5,6 +5,7 @@ import { Result } from "~/types/result";
 import { RegisterSchema } from "~/validation/auth";
 
 import { createUser, userExistsByEmail } from "~/server/data/user";
+import { getVerifiedEmail } from "./login-flow/send-email-verification";
 
 export const RegisterAction = async (
   values: z.infer<typeof RegisterSchema>,
@@ -33,8 +34,5 @@ export const RegisterAction = async (
     password,
   });
 
-  return {
-    success: true,
-    message: "Confirmation Email Sent! Check your email.",
-  };
+  return getVerifiedEmail(email);
 };

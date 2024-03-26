@@ -5,7 +5,11 @@ import {
   DefaultSession,
 } from "next-auth";
 import { type JWT } from "next-auth/jwt";
-import { emailVerifiedByID, getUserById } from "~/server/data/user";
+import {
+  emailVerifiedByID,
+  getUserById,
+  isUserEmailVerified,
+} from "~/server/data/user";
 import { UserRole } from "~/server/db/schemas/users/user-account";
 
 declare module "next-auth/jwt" {
@@ -60,9 +64,8 @@ export async function signInCallback({
   account: Account | null;
 }) {
   if (account?.provider !== "credentials") return true;
-  if (!user || !user.id) return false;
-  // make sure that the user has verified their email
-  //if (!(await emailVerifiedByID(user.id))) return false;
+  if (!user || !user.id || !user.email) return false;
+  if (!(await isUserEmailVerified(user.email))) return false;
 
   //@TODO check if they have two factor authentication
 

@@ -1,4 +1,4 @@
-import "~/styles/global.css";
+import "~/client/styles/global.css";
 
 import { Inter } from "next/font/google";
 

@@ -7,7 +7,7 @@ import {
   DEFAULT_LOGIN_REDIRECT,
 } from "~/server/auth/routes";
 
-export const middleware = (req: NextAuthRequest) => {
+export const middleware = auth((req: NextAuthRequest) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
@@ -34,7 +34,7 @@ export const middleware = (req: NextAuthRequest) => {
   }
 
   return;
-};
+});
 
 export const config = {
   matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],

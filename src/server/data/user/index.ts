@@ -20,6 +20,18 @@ export const getUserByEmail = async (email: string) => {
   //https://www.codemzy.com/blog/copying-object-without-property-javascript
   return (({ hashedPassword, ...user }) => user)(user);
 };
+
+export const getUserById = async (id: string) => {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, id),
+  });
+  if (!user) {
+    return null;
+  }
+
+  return (({ hashedPassword, ...user }) => user)(user);
+};
+
 /**
  *  Getter for the user by email.
  * @param email

@@ -20,6 +20,7 @@ export const VerifyEmail = ({ baseURL, validationLink }: VerifyEmailProps) => (
   <Html>
     <Head />
     <Body style={main}>
+      <div style={gap}></div>
       <Container style={container}>
         <Img
           src="https://jsx.email/assets/demo/plaid-logo.png"
@@ -78,6 +79,10 @@ const main = {
   backgroundColor: "#dddddd",
   fontFamily: "HelveticaNeue,Helvetica,Arial,sans-serif",
   margin: "50px 0",
+};
+
+const gap = {
+  height: "50px",
 };
 
 const container = {

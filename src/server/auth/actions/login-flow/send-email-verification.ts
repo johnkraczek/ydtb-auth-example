@@ -1,6 +1,6 @@
 import { generateToken } from "~/server/data/tokens/token";
 import { TokenType } from "~/server/db/schemas/users/user-token";
-import { sendVerificationEmail } from "~/server/mail/services/auth";
+import { sendVerificationEmail } from "~/server/mail/actions/emails";
 
 export const getEmailVerified = async (email: string) => {
   const verificationToken = await generateToken(

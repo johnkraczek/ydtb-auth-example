@@ -1,37 +1,129 @@
 src/
 ├── app
 │   ├── (auth)
+│   │   ├── error
+│   │   │   └── page.tsx
+│   │   ├── login
+│   │   │   └── page.tsx
+│   │   ├── register
+│   │   │   └── page.tsx
+│   │   ├── reset
+│   │   │   └── page.tsx
+│   │   ├── verify-email
+│   │   │   └── page.tsx
+│   │   └── verify-reset
+│   │       └── page.tsx
 │   ├── (public)
 │   ├── api
+│   │   └── auth
+│   │       └── [...nextauth]
+│   │   │       └── route.ts
 │   ├── settings
+│   │   ├── client-example
+│   │   │   └── page.tsx
+│   │   ├── oAuth-providers
+│   │   │   └── page.tsx
+│   │   ├── role-example
+│   │   │   └── page.tsx
+│   │   ├── server-example
+│   │   │   └── page.tsx
+│   │   ├── two-factor
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
 │   ├── layout.tsx
 │   └── page.tsx
 ├── client
 │   ├── components
 │   │   ├── auth
+│   │   │   ├── login-flow
+│   │   │   │   └── login-step.tsx
+│   │   │   ├── login-form.tsx
+│   │   │   ├── logout-button.tsx
+│   │   │   ├── new-password-form.tsx
+│   │   │   ├── new-verification-form.tsx
+│   │   │   ├── page-wrapper.tsx
+│   │   │   ├── register-form.tsx
+│   │   │   ├── reset-form.tsx
+│   │   │   ├── social-buttons.tsx
+│   │   │   └── user-button.tsx
 │   │   ├── basic
-│   │   └── ui
+│   │   │   ├── error-display.tsx
+│   │   │   ├── header.tsx
+│   │   │   ├── link-button.tsx
+│   │   │   ├── setting-page.tsx
+│   │   │   └── success-display.tsx
+│   │   ├── cards
+│   │   │   ├── auth-card-wrapper.tsx
+│   │   │   └── error-card.tsx
+│   │   ├── nav
+│   │   │   └── sidebar-nav.tsx
+│   │   ├── settings
+│   │   │   └── default-settings.tsx
+│   │   ├── ui
+│   │   │   ├── avatar.tsx
+│   │   │   ├── button.tsx
+│   │   │   ├── card.tsx
+│   │   │   ├── dropdown-menu.tsx
+│   │   │   ├── form.tsx
+│   │   │   ├── input.tsx
+│   │   │   ├── label.tsx
+│   │   │   └── separator.tsx
+│   │   └── utils.ts
 │   ├── hooks
+│   │   └── use-current-user.ts
 │   └── styles
+│       └── global.css
 ├── server
 │   ├── actions
 │   ├── auth
 │   │   ├── actions
-│   │   └── config
+│   │   │   ├── login-flow
+│   │   │   │   ├── new-verification.ts
+│   │   │   │   └── send-email-verification.ts
+│   │   │   ├── loginAction.ts
+│   │   │   ├── logout.ts
+│   │   │   ├── new-password.ts
+│   │   │   ├── password-reset.ts
+│   │   │   └── registerAction.ts
+│   │   ├── config
+│   │   │   ├── auth-config.ts
+│   │   │   ├── callbacks.ts
+│   │   │   ├── events.ts
+│   │   │   └── providers.ts
+│   │   ├── index.ts
+│   │   └── routes.ts
 │   ├── data
+│   │   ├── tokens
+│   │   │   └── token.ts
+│   │   └── user
+│   │       └── index.ts
 │   ├── db
 │   │   ├── schemas
+│   │   │   ├── users
+│   │   │   │   ├── provider-account.ts
+│   │   │   │   ├── user-account.ts
+│   │   │   │   └── user-token.ts
+│   │   │   └── index.ts
 │   │   ├── utils
-│   │   ├── index.ts
-│   │   └── schema.ts
+│   │   │   └── index.ts
+│   │   └── index.ts
 │   └── mail
+│       ├── actions
+│   │   │   └── emails.ts
 │       ├── config
-│       ├── emails
-│       └── services
-├── styles
-│   └── globals.css
+│   │   │   └── index.ts
+│       └── emails
+│   │       ├── style
+│   │   │   │   └── style.ts
+│   │       ├── passwordReset.tsx
+│   │       ├── twoFactorCode.tsx
+│   │       └── verification.tsx
 ├── types
+│   └── result.d.ts
 ├── validation
 │   └── auth
-└── env.js
+│       └── index.js
+├── env.js
+└── middleware.ts
   

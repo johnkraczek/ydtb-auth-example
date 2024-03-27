@@ -1,4 +1,4 @@
-import "server-only";
+"use server";
 import { and, eq, lt, or } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "~/server/db";

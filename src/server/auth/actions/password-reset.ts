@@ -3,7 +3,7 @@ import { z } from "zod";
 import { generateToken } from "~/server/data/tokens/token";
 import { userExistsByEmail } from "~/server/data/user";
 import { TokenType } from "~/server/db/schemas/users/user-token";
-import { sendPasswordResetEmail } from "~/server/mail/services/auth";
+import { sendPasswordResetEmail } from "~/server/mail/actions/emails";
 import { Result } from "~/types/result";
 import { PasswordResetSchema } from "~/validation/auth";
 

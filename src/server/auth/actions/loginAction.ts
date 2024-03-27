@@ -6,7 +6,7 @@ import { LoginSchema } from "~/validation/auth";
 import { signIn } from "~/server/auth";
 import { AuthError } from "next-auth";
 import { DEFAULT_LOGIN_REDIRECT } from "../routes";
-import { getVerifiedEmail } from "./login-flow/send-email-verification";
+import { getEmailVerified } from "./login-flow/send-email-verification";
 
 export const loginAction = async (
   values: z.infer<typeof LoginSchema>,
@@ -29,7 +29,7 @@ export const loginAction = async (
     };
 
   // send email verification
-  if (!(await isUserEmailVerified(email))) return await getVerifiedEmail(email);
+  if (!(await isUserEmailVerified(email))) return await getEmailVerified(email);
 
   // check for 2fa
 

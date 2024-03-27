@@ -133,3 +133,13 @@ export const VerifyUserEmail = async (email: string) => {
     })
     .where(eq(users.email, email));
 };
+
+export const updateUserPass = async (id: string, password: string) => {
+  const hashedPassword = await bcryptjs.hash(password, 10);
+  return await db
+    .update(users)
+    .set({
+      hashedPassword,
+    })
+    .where(eq(users.id, id));
+};

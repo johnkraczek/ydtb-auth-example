@@ -20,3 +20,15 @@ export const RegisterSchema = z.object({
     message: "Name is required",
   }),
 });
+
+export const PasswordResetSchema = z.object({
+  email: z.string().email({
+    message: "Email is required",
+  }),
+});
+
+export const PasswordVerifySchema = z.object({
+  password: z.string().min(6, {
+    message: "Minimum 6 characters is required",
+  }),
+});

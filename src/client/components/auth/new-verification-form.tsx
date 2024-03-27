@@ -7,12 +7,12 @@ import { BeatLoader } from "react-spinners";
 import { CardWrapper } from "../cards/auth-card-wrapper";
 import { ShowSuccess } from "../basic/success-display";
 import { ShowError } from "../basic/error-display";
-import { newVerification } from "~/server/auth/actions/login-flow/new-verification";
+import { tokenIsValid } from "~/server/data/tokens/token";
+import { TokenType } from "~/server/db/schemas/users/user-token";
 
 export const NewVerificationForm = () => {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
-
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -24,13 +24,14 @@ export const NewVerificationForm = () => {
       setError("Invalid or missing token");
       return;
     }
-    const result = await newVerification(token);
-    if (!result.success) {
-      setError(result.message);
+
+    const isValid = await tokenIsValid(token, TokenType.VERIFY_EMAIL_TOKEN);
+    if (!isValid) {
+      setError("Invalid Token");
       return;
     }
-    if (result.success) {
-      setSuccess(result.message);
+    if (isValid) {
+      setSuccess("Success!");
       await sleep(2000);
       router.push("/login");
     }

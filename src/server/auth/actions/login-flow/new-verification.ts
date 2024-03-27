@@ -1,25 +1,22 @@
 "use server";
 
-import {
-  getVerificationTokenByToken,
-  removeVerificationToken,
-} from "~/server/data/tokens/verification-token";
+import { getTokenByToken, removeTokenByID } from "~/server/data/tokens/token";
 import { VerifyUserEmail, userExistsByEmail } from "~/server/data/user";
+import { TokenType } from "~/server/db/schemas/users/user-token";
 import { Result } from "~/types/result";
 
-export const newVerification = async (token: string): Promise<Result> => {
-  const existingToken = await getVerificationTokenByToken(token);
+export const newEmailVerification = async (
+  token: string,
+  email: string,
+): Promise<Result> => {
+  const existingToken = await getTokenByToken(
+    token,
+    TokenType.VERIFY_EMAIL_TOKEN,
+  );
   if (!existingToken) {
     return {
       success: false,
-      message: "Invalid token",
-    };
-  }
-
-  if (existingToken.expires < new Date()) {
-    return {
-      success: false,
-      message: "Token expired",
+      message: "Invalid or expired token",
     };
   }
 
@@ -32,7 +29,7 @@ export const newVerification = async (token: string): Promise<Result> => {
   }
 
   await VerifyUserEmail(existingToken.email);
-  await removeVerificationToken(token);
+  await removeTokenByID(token, TokenType.VERIFY_EMAIL_TOKEN);
 
   return {
     success: true,

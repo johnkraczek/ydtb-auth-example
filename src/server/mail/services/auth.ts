@@ -42,8 +42,8 @@ export const sendPasswordResetEmail = async ({
   email: string;
   validationCode: string;
 }) => {
-  const baseURL = `${env.NEXTAUTH_URL}`;
-  const validationLink = `${baseURL}/verify-reset?token=${validationCode}`;
+  const baseURL = `${env.BASE_APP_URL}`;
+  const validationLink = `${env.BASE_APP_URL}/verify-reset?token=${validationCode}`;
 
   const html = await render(PassResetEmail({ validationLink, baseURL }));
   return new Promise<{
@@ -71,10 +71,8 @@ export const sendTwoFactorConfEmail = async ({
   email: string;
   validationCode: string;
 }) => {
-  const baseURL = `${env.NEXTAUTH_URL}`;
-
+  const baseURL = `${env.BASE_APP_URL}`;
   const html = await render(TwoFactorEmail({ validationCode, baseURL }));
-
   return new Promise<{
     err: Error | null;
     info: SMTPTransport.SentMessageInfo;

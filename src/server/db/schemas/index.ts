@@ -5,3 +5,4 @@
 export { users } from "~/server/db/schemas/users/user-account";
 export { accounts } from "~/server/db/schemas/users/provider-account";
 export { token } from "~/server/db/schemas/users/user-token";
+export { twoFactorMethod } from "~/server/db/schemas/users/two-factor-methods";

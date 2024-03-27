@@ -66,14 +66,12 @@ export const isUserEmailVerified = async (email: string) => {
 /**
  * Create a new user
  */
-
 export const createUser = async (user: {
   name: string;
   email: string;
   password: string;
 }) => {
   const hashed = await bcryptjs.hash(user.password, 10);
-
   return await db.insert(users).values({
     name: user.name,
     email: user.email,
@@ -116,14 +114,11 @@ export const emailVerifiedByID = async (id: string) => {
  * @param email
  * @returns the database response.
  */
-
 export const VerifyUserEmail = async (email: string) => {
   const existingUser = await getUserByEmail(email);
-
   if (existingUser?.emailVerified) {
     return;
   }
-
   await db
     .update(users)
     .set({

@@ -7,8 +7,8 @@ import { BeatLoader } from "react-spinners";
 import { CardWrapper } from "../cards/auth-card-wrapper";
 import { ShowSuccess } from "../basic/success-display";
 import { ShowError } from "../basic/error-display";
-import { tokenIsValid } from "~/server/data/tokens/token";
 import { TokenType } from "~/server/db/schemas/users/user-token";
+import { newEmailVerification } from "~/server/auth/actions/login-flow/new-verification";
 
 export const NewVerificationForm = () => {
   const [error, setError] = useState<string | undefined>();
@@ -25,7 +25,10 @@ export const NewVerificationForm = () => {
       return;
     }
 
-    const isValid = await tokenIsValid(token, TokenType.VERIFY_EMAIL_TOKEN);
+    const isValid = await newEmailVerification(
+      token,
+      TokenType.VERIFY_EMAIL_TOKEN,
+    );
     if (!isValid) {
       setError("Invalid Token");
       return;

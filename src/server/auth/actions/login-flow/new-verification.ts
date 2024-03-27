@@ -1,7 +1,8 @@
 "use server";
 
 import { getTokenByToken, removeTokenByID } from "~/server/data/tokens/token";
-import { VerifyUserEmail, userExistsByEmail } from "~/server/data/user";
+import { addEmailTwoFactor } from "~/server/data/two-fa-methods";
+import { VerifyUserEmail, getUserByEmail } from "~/server/data/user";
 import { TokenType } from "~/server/db/schemas/users/user-token";
 import { Result } from "~/types/result";
 
@@ -20,7 +21,7 @@ export const newEmailVerification = async (
     };
   }
 
-  const user = await userExistsByEmail(existingToken.email);
+  const user = await getUserByEmail(existingToken.email);
   if (!user) {
     return {
       success: false,
@@ -29,7 +30,8 @@ export const newEmailVerification = async (
   }
 
   await VerifyUserEmail(existingToken.email);
-  await removeTokenByID(token, TokenType.VERIFY_EMAIL_TOKEN);
+  await addEmailTwoFactor({ userID: user.id });
+  await removeTokenByID(existingToken.id, TokenType.VERIFY_EMAIL_TOKEN);
 
   return {
     success: true,

@@ -19,7 +19,9 @@ export const token = createTable(
     email: text("email").notNull(),
     type: text("token_type", {
       enum: ["", ...Object.values(TokenType)],
-    }).$type<TokenType>(),
+    })
+      .$type<TokenType>()
+      .notNull(),
     value: text("value").notNull(),
     expires: timestamp("expires").notNull().$type<Date>(),
   },

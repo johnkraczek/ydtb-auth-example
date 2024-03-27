@@ -5,22 +5,6 @@ import { db } from "~/server/db";
 import { token } from "~/server/db/schemas/";
 import { TokenType } from "~/server/db/schemas/users/user-token";
 
-export async function tokenIsValid(tokenNum: string, type: TokenType) {
-  try {
-    const result = await db.query.token.findFirst({
-      where: and(eq(token.value, tokenNum), eq(token.type, type)),
-    });
-    if (!result) return false;
-    if (result.expires < new Date()) {
-      await removeTokenByID(result.id, type);
-      return false;
-    }
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
 export async function getTokenByToken(tokenNum: string, type: TokenType) {
   try {
     const result = await db.query.token.findFirst({
@@ -97,6 +81,8 @@ export async function generateToken(
  * @param tokenId
  */
 export async function removeTokenByID(tokenId: string, type: TokenType) {
+  console.log(tokenId);
+  console.log(type);
   await db
     .delete(token)
     .where(

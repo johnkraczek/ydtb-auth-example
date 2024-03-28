@@ -1,12 +1,14 @@
+"use server";
 import { eq } from "drizzle-orm/sql";
 import { Account, User } from "next-auth";
 
 import { getUserById, updateUserProfileImage } from "../user";
 import { accounts } from "~/server/db/schemas";
 import { db } from "~/server/db";
+import { currentUserCanPerformAction } from "~/server/auth/actions/user";
 
 export const getUserAccountsByUserId = async (userId: string) => {
-  // @TODO VERIFY AUTHORIZATION
+  if (!(await currentUserCanPerformAction(userId))) return;
   try {
     return await db.query.accounts.findMany({
       where: eq(accounts.userId, userId),
@@ -25,7 +27,7 @@ export const updateAccountProfileInfo = async ({
   account: Account;
   profile: User;
 }) => {
-  // @TODO VERIFY AUTHORIZATION
+  if (!(await currentUserCanPerformAction(user.id!))) return;
 
   if (user && user.id) {
     const eUser = await getUserById(user.id);
@@ -51,7 +53,7 @@ export const unlinkUserAccountByProvider = async ({
   userId: string;
   provider: string;
 }) => {
-  // @TODO VERIFY AUTHORIZATION
+  if (!(await currentUserCanPerformAction(userId))) return;
 
   return await db
     .delete(accounts)

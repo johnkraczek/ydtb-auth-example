@@ -6,6 +6,7 @@ import {
   twoFactorMethod,
 } from "~/server/db/schemas/users/two-factor-methods";
 import { db } from "~/server/db";
+import { currentUserCanPerformAction } from "~/server/auth/actions/user";
 
 const twoFaLabels = {
   email: "Email a code",
@@ -56,7 +57,7 @@ export const addTwoFactorMethod = async ({
   userID: string;
   config: twoFaMethod;
 }) => {
-  // @TODO Add a check to make sure this user is logged in and should be able to do this for this account.
+  if (!(await currentUserCanPerformAction(userID))) return;
   const hasMethod = await db.query.twoFactorMethod.findFirst({
     where:
       eq(twoFactorMethod.userID, userID) &&
@@ -75,7 +76,7 @@ export const removeTwoFactorMethod = async (
   userID: string,
   methodID: string,
 ) => {
-  // @TODO Add a check to make sure this user is logged in and should be able to do this.
+  if (!(await currentUserCanPerformAction(userID))) return;
   await db
     .delete(twoFactorMethod)
     .where(

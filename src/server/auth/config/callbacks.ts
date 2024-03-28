@@ -1,3 +1,4 @@
+import "server-only";
 import { type Session, type Account, DefaultSession } from "next-auth";
 import { type JWT } from "next-auth/jwt";
 import {

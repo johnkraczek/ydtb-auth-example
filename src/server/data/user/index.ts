@@ -4,6 +4,8 @@ import { db } from "~/server/db";
 import { users } from "~/server/db/schemas";
 import bcryptjs from "bcryptjs";
 
+export type User = Awaited<ReturnType<typeof getUserById>>;
+
 /**
  *  Getter for the user by email.
  * @param email

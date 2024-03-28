@@ -1,16 +1,12 @@
-import {
-  type Session,
-  type User,
-  type Account,
-  DefaultSession,
-} from "next-auth";
+import { type Session, type Account, DefaultSession } from "next-auth";
 import { type JWT } from "next-auth/jwt";
 import {
-  emailVerifiedByID,
   getUserById,
   isUserEmailVerified,
+  type User,
 } from "~/server/data/user";
 import { UserRole } from "~/server/db/schemas/users/user-account";
+import { getVerifiedConfirmationToken } from "../actions/two-fa/twoFactor";
 
 declare module "next-auth/jwt" {
   interface JWT {
@@ -63,14 +59,13 @@ export async function signInCallback({
   user: User;
   account: Account | null;
 }) {
-  console.log("SignIn Account:", account);
-
   if (account?.provider !== "credentials") return true;
   if (!user || !user.id || !user.email) return false;
   const emailVerified = await isUserEmailVerified(user.email);
   if (!emailVerified) return false;
 
-  //@TODO check if they have two factor authentication
+  if (user.isTwoFactorEnabled)
+    return await getVerifiedConfirmationToken(user.email);
 
   return true;
 }

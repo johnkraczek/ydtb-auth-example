@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "~/server/db";
 import { token } from "~/server/db/schemas/";
 import { TokenType } from "~/server/db/schemas/users/user-token";
+import crypto from "crypto";
 
 export async function getTokenByToken(tokenNum: string, type: TokenType) {
   try {
@@ -47,6 +48,35 @@ export async function getTokenIdByEmail(email: string, type: TokenType) {
 }
 
 /**
+ * @param email
+ * @param token
+ * @param type
+ */
+export async function validateToken(
+  email: string,
+  code: string,
+  type: TokenType,
+) {
+  try {
+    const result = await db.query.token.findFirst({
+      where: and(
+        eq(token.email, email),
+        eq(token.type, type),
+        eq(token.value, code),
+      ),
+    });
+    if (!result) return false;
+    if (result.expires < new Date()) {
+      await removeTokenByID(result.id, type);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
  * Generate a new Verification token and store it in the database. Remove any existing tokens for the email.
  * @param email
  * @returns the token string
@@ -61,7 +91,9 @@ export async function generateToken(
   }
 
   const newToken =
-    type == TokenType.TWOFA_EMAIL_TOKEN ? uuidv4().split("-")[0] : uuidv4();
+    type == TokenType.TWOFA_EMAIL_TOKEN || type == TokenType.TWOFA_SMS_TOKEN
+      ? crypto.randomInt(100_000, 1_000_000).toString()
+      : uuidv4();
   if (!newToken) throw new Error("Token generation failed");
 
   const expires = new Date(new Date().getTime() + 1000 * 3600);
@@ -81,8 +113,6 @@ export async function generateToken(
  * @param tokenId
  */
 export async function removeTokenByID(tokenId: string, type: TokenType) {
-  console.log(tokenId);
-  console.log(type);
   await db
     .delete(token)
     .where(

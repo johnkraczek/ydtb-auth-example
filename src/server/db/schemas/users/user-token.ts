@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 export enum TokenType {
   PASS_RESET_TOKEN = "PASSWORD",
   TWOFA_EMAIL_TOKEN = "2FA_EMAIL",
+  TWOFA_SMS_TOKEN = "2FA_SMS",
   VERIFY_EMAIL_TOKEN = "VERIFY_EMAIL",
 }
 

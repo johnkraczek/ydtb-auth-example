@@ -1,7 +1,5 @@
-import { Session } from "next-auth";
+"use server";
 import { auth } from "~/server/auth";
-
-export type user = Session["user"];
 
 export const currentUser = async () => {
   const session = await auth();

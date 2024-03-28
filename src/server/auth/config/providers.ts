@@ -1,3 +1,4 @@
+import "server-only";
 import Credentials from "next-auth/providers/credentials";
 import Discord from "next-auth/providers/discord";
 import Google from "next-auth/providers/google";

@@ -1,11 +1,6 @@
 "use server";
 import { z } from "zod";
-import {
-  getUserByEmail,
-  isUserEmailVerified,
-  userExistsByEmail,
-  verifyUserCredentials,
-} from "~/server/data/user";
+import { getUserByEmail, verifyUserCredentials } from "~/server/data/user";
 import { LoginSchema } from "~/validation/auth";
 import { signIn } from "~/server/auth";
 import { AuthError } from "next-auth";
@@ -74,8 +69,8 @@ export const loginAction = async (
   // send email verification
   if (!existingUser.emailVerified) return await getEmailVerified(email);
 
-  // check for 2fa
   if (existingUser.isTwoFactorEnabled) {
+    // check if the user has provided correct login information, but dont actually log them in yet.
     const goodCredentials = await verifyUserCredentials(email, password);
     // TODO this is a good place to do some rate limiting so that someone cant brute force the regular password.
     if (!goodCredentials) {

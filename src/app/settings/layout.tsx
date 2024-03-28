@@ -29,10 +29,6 @@ const sidebarNavItems = [
     href: "/settings/role-example",
   },
   {
-    title: "Server Example",
-    href: "/settings/server-example",
-  },
-  {
     title: "Client Example",
     href: "/settings/client-example",
   },

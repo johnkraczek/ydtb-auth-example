@@ -16,6 +16,11 @@ import { twoFactorDisplay } from "~/server/db/schemas/users/two-factor-methods";
 import { MethodChoice } from "./login-flow/method-choice";
 import { ConfirmToken } from "./login-flow/confirm-token";
 
+const learnMoreLink = {
+  href: "/kb/learn-more",
+  text: "Learn More",
+};
+
 enum loginFlowStep {
   "login",
   "2FA-Choice",
@@ -100,7 +105,14 @@ export const LoginForm = () => {
             )}
           </div>
 
-          <ShowError message={error} />
+          {accountNotLinkedError ? (
+            <ShowError
+              message="Email Used in another provider"
+              link={learnMoreLink}
+            />
+          ) : (
+            <ShowError message={error} />
+          )}
 
           <ShowSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>

@@ -28,4 +28,8 @@ export const authConfig = {
     linkAccount: (params) => linkedAccountEvent(params),
   },
   session: { strategy: "jwt" },
+  pages: {
+    signIn: "/login",
+    error: "/error",
+  },
 } satisfies NextAuthConfig;

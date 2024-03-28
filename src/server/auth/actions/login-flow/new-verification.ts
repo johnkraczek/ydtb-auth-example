@@ -2,7 +2,7 @@
 
 import { getTokenByToken, removeTokenByID } from "~/server/data/tokens/token";
 import { addEmailTwoFactor } from "~/server/data/two-fa-methods";
-import { VerifyUserEmail, getUserByEmail } from "~/server/data/user";
+import { setUserEmailAsVerified, getUserByEmail } from "~/server/data/user";
 import { TokenType } from "~/server/db/schemas/users/user-token";
 import { Result } from "~/types/result";
 
@@ -29,7 +29,7 @@ export const newEmailVerification = async (
     };
   }
 
-  await VerifyUserEmail(existingToken.email);
+  await setUserEmailAsVerified(existingToken.email);
   await addEmailTwoFactor({ userID: user.id });
   await removeTokenByID(existingToken.id, TokenType.VERIFY_EMAIL_TOKEN);
 

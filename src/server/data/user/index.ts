@@ -114,7 +114,7 @@ export const emailVerifiedByID = async (id: string) => {
  * @param email
  * @returns the database response.
  */
-export const VerifyUserEmail = async (email: string) => {
+export const setUserEmailAsVerified = async (email: string) => {
   const existingUser = await getUserByEmail(email);
   if (existingUser?.emailVerified) {
     return;
@@ -123,7 +123,6 @@ export const VerifyUserEmail = async (email: string) => {
     .update(users)
     .set({
       emailVerified: new Date(),
-      email,
       isTwoFactorEnabled: true,
     })
     .where(eq(users.email, email));
@@ -137,4 +136,14 @@ export const updateUserPass = async (id: string, password: string) => {
       hashedPassword,
     })
     .where(eq(users.id, id));
+};
+
+export const updateUserProfileImage = async ({
+  id,
+  imgURL,
+}: {
+  id: string;
+  imgURL: string;
+}) => {
+  await db.update(users).set({ image: imgURL }).where(eq(users.id, id));
 };

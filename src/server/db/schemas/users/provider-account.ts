@@ -21,6 +21,9 @@ export const accounts = createTable(
     scope: text("scope"),
     id_token: text("id_token"),
     session_state: text("session_state"),
+    email: text("email"),
+    accountName: text("accountName"),
+    accountImage: text("accountImg"),
   },
   (account) => ({
     compoundKey: primaryKey({

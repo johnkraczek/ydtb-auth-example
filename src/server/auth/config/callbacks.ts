@@ -63,6 +63,8 @@ export async function signInCallback({
   user: User;
   account: Account | null;
 }) {
+  console.log("SignIn Account:", account);
+
   if (account?.provider !== "credentials") return true;
   if (!user || !user.id || !user.email) return false;
   const emailVerified = await isUserEmailVerified(user.email);

@@ -1,6 +1,8 @@
 import { primaryKey, text, timestamp } from "drizzle-orm/pg-core";
 import { createTable } from "../../utils";
 import { v4 as uuidv4 } from "uuid";
+import { users } from "./user-account";
+import { relations } from "drizzle-orm";
 
 export enum TokenType {
   PASS_RESET_TOKEN = "PASSWORD",
@@ -32,3 +34,8 @@ export const token = createTable(
     }),
   }),
 );
+
+// =================== RELATIONSHIPS ===================
+export const tokenRelationships = relations(token, ({ one }) => ({
+  user: one(users, { fields: [token.email], references: [users.email] }),
+}));

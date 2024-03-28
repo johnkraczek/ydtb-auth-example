@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm/sql";
-import { User } from "next-auth";
+import { Account, User } from "next-auth";
 
 import { getUserById, updateUserProfileImage } from "../user";
 import { accounts } from "~/server/db/schemas";
@@ -18,9 +18,11 @@ export const getUserAccountsByUserId = async (userId: string) => {
 
 export const updateAccountProfileInfo = async ({
   user,
+  account,
   profile,
 }: {
   user: User;
+  account: Account;
   profile: User;
 }) => {
   // @TODO VERIFY AUTHORIZATION
@@ -31,6 +33,7 @@ export const updateAccountProfileInfo = async ({
       updateUserProfileImage({ id: user.id, imgURL: profile.image });
     }
   }
+
   await db
     .update(accounts)
     .set({
@@ -38,7 +41,7 @@ export const updateAccountProfileInfo = async ({
       accountName: profile.name,
       accountImage: profile.image,
     })
-    .where(eq(accounts.providerAccountId, profile.id!));
+    .where(eq(accounts.providerAccountId, account.providerAccountId!));
 };
 
 export const unlinkUserAccountByProvider = async ({

@@ -20,10 +20,12 @@ export const middleware = auth((req: NextAuthRequest) => {
     if (isLoggedIn) {
       if (hasError) {
         return Response.redirect(
-          new URL(DEFAULT_LOGIN_REDIRECT + "?error=" + hasError, nextUrl),
+          new URL(
+            DEFAULT_LOGIN_REDIRECT + "/oAuth-providers?error=" + hasError,
+            nextUrl,
+          ),
         );
       }
-
       return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return;

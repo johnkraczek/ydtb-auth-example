@@ -6,6 +6,7 @@ import { relations } from "drizzle-orm";
 import { accounts } from "./provider-account";
 import { v4 as uuidv4 } from "uuid";
 import { twoFactorMethod } from "./two-factor-methods";
+import { token } from "./user-token";
 
 export enum UserRole {
   USER = "USER",
@@ -38,4 +39,8 @@ export const usersAccountRelations = relations(users, ({ many }) => ({
 
 export const usersTwoFaMethods = relations(users, ({ many }) => ({
   twoFactorMethod: many(twoFactorMethod),
+}));
+
+export const usersTokenRelations = relations(users, ({ many }) => ({
+  token: many(token),
 }));

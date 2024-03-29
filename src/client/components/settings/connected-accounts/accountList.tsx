@@ -19,7 +19,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { Button } from "../../ui/button";
 
-const AccountList = () => {
+export const AccountList = () => {
   const [isPending, startTransition] = useTransition();
   const [accounts, setAccounts] = useState<UserOAuthProfile[]>([]);
 
@@ -119,4 +119,3 @@ const AccountList = () => {
     </>
   );
 };
-export default AccountList;

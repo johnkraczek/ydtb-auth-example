@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { ShowError } from "~/client/components/basic/error-display";
 import { SettingPage } from "~/client/components/basic/setting-page";
-import AccountList from "~/client/components/settings/connectedAccounts/accountList";
+import { AccountList } from "~/client/components/settings/connected-accounts/accountList";
 
 const learnMoreLink = {
   href: "/kb/learn-more",

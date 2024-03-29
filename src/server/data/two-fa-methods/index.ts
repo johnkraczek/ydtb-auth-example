@@ -83,3 +83,35 @@ export const removeTwoFactorMethod = async (
       eq(twoFactorMethod.id, methodID) && eq(twoFactorMethod.userID, userID),
     );
 };
+
+export type TwoFactorDetails = {
+  method: string;
+  label: string;
+  data: twoFaMethod | null;
+  id: string;
+};
+
+export const getTwoFactorDetailsByUser = async ({
+  userID,
+}: {
+  userID?: string;
+}): Promise<TwoFactorDetails[] | null> => {
+  if (!userID || !(await currentUserCanPerformAction(userID))) return null;
+  try {
+    const methods = await db.query.twoFactorMethod.findMany({
+      where: eq(twoFactorMethod.userID, userID),
+    });
+
+    const displayResults = methods.map((item) => {
+      return {
+        method: item.twoFaType,
+        label: twoFaLabels[item.twoFaType as keyof typeof twoFaLabels],
+        data: item.twoFaData,
+        id: item.id,
+      };
+    });
+    return displayResults;
+  } catch (e) {
+    return null;
+  }
+};

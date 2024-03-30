@@ -19,6 +19,8 @@ import { Button } from "../../ui/button";
 import { MdNewLabel } from "react-icons/md";
 import { Unlink2FADialog } from "./unlink-2fa-dialog";
 import { TwoFaType } from "~/server/db/schemas/users/two-factor-methods";
+import SetupSMS from "./setup-sms";
+import SetupAuthenticator from "./setup-authenticator";
 
 export const TwoFactorList = () => {
   const user = useCurrentUser();
@@ -33,18 +35,6 @@ export const TwoFactorList = () => {
       }
     });
   }, []);
-
-  const handleSetupClick = (type: string) => {
-    if (type == TwoFaType.AUTHENTICATOR) {
-      console.log("Auth");
-    }
-    if (type == TwoFaType.SMS) {
-      console.log("SMS");
-    }
-    if (type == TwoFaType.EMAIL) {
-      console.log("Email");
-    }
-  };
 
   const getMethodStatus = ({
     label,
@@ -72,18 +62,8 @@ export const TwoFactorList = () => {
     }
     return (
       <TableCell className="text-right">
-        <Button
-          className="w-52"
-          variant={"outline"}
-          onClick={() => {
-            handleSetupClick(label);
-          }}
-        >
-          Setup {label}{" "}
-          <span className="pl-3">
-            <MdNewLabel size={25} />
-          </span>
-        </Button>
+        {label == TwoFaType.AUTHENTICATOR && <SetupAuthenticator />}
+        {label == TwoFaType.SMS && <SetupSMS />}
       </TableCell>
     );
   };

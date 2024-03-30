@@ -34,3 +34,9 @@ export const PasswordVerifySchema = z.object({
     message: "Minimum 6 characters is required",
   }),
 });
+
+export const TwoFaCodeSchema = z.object({
+  code: z.string().length(6, {
+    message: "Code must be 6 numbers."
+  })
+})

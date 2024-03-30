@@ -1,5 +1,5 @@
 "use server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import {
   TwoFaType,
   twoFaMethod,
@@ -23,7 +23,10 @@ export const getTwoFactorDisplayMethodsByUser = async (
 ): Promise<twoFactorDisplay[] | null> => {
   try {
     const methods = await db.query.twoFactorMethod.findMany({
-      where: eq(twoFactorMethod.userID, userID),
+      where: and(
+        eq(twoFactorMethod.userID, userID),
+        eq(twoFactorMethod.status, true),
+      ),
     });
 
     const displayResults = methods.map((item) => {
@@ -50,6 +53,7 @@ export const addEmailTwoFactor = async ({ userID }: { userID: string }) => {
       userID,
       twoFaType: config.method,
       twoFaData: config,
+      status: true,
     });
   }
 };
@@ -103,7 +107,10 @@ export const getTwoFactorDetailsByUser = async ({
   if (!userID || !(await currentUserCanPerformAction(userID))) return null;
   try {
     const methods = await db.query.twoFactorMethod.findMany({
-      where: eq(twoFactorMethod.userID, userID),
+      where: and(
+        eq(twoFactorMethod.userID, userID),
+        eq(twoFactorMethod.status, true),
+      ),
     });
 
     const displayResults = methods.map((item) => {

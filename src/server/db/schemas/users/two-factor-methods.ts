@@ -4,17 +4,23 @@ import { createTable } from "../../utils";
 import { json, text, unique } from "drizzle-orm/pg-core";
 import { users } from "./user-account";
 
+export enum TwoFaType {
+  "SMS" = "SMS",
+  "EMAIL" = "Email",
+  "AUTHENTICATOR" = "Authenticator",
+}
+
 type smsMethod = {
-  method: "sms";
+  method: "SMS";
   phone: string;
 };
 
 type emailMethod = {
-  method: "email";
+  method: "EMAIL";
 };
 
 type authenticatorMethod = {
-  method: "authenticator";
+  method: "AUTHENTICATOR";
   secret: string;
 };
 

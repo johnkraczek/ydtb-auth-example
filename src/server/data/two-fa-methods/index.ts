@@ -1,12 +1,16 @@
 "use server";
 import { eq } from "drizzle-orm";
 import {
+  TwoFaType,
   twoFaMethod,
   twoFactorDisplay,
   twoFactorMethod,
 } from "~/server/db/schemas/users/two-factor-methods";
 import { db } from "~/server/db";
-import { currentUserCanPerformAction } from "~/server/auth/actions/user";
+import {
+  currentUser,
+  currentUserCanPerformAction,
+} from "~/server/auth/actions/user";
 
 const twoFaLabels = {
   email: "Email a code",
@@ -35,7 +39,7 @@ export const getTwoFactorDisplayMethodsByUser = async (
 };
 
 export const addEmailTwoFactor = async ({ userID }: { userID: string }) => {
-  const config: twoFaMethod = { method: "email" };
+  const config: twoFaMethod = { method: "EMAIL" };
   const hasMethod = await db.query.twoFactorMethod.findFirst({
     where:
       eq(twoFactorMethod.userID, userID) &&
@@ -113,5 +117,15 @@ export const getTwoFactorDetailsByUser = async ({
     return displayResults;
   } catch (e) {
     return null;
+  }
+};
+
+export const maybeRemoveTwoFactorMethod = async (type: TwoFaType) => {
+  const user = await currentUser();
+  if (!user) return false;
+
+  try {
+  } catch (e) {
+    return false;
   }
 };

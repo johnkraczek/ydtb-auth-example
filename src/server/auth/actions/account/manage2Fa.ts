@@ -1,9 +1,6 @@
 "use server";
 
-import {
-  TwoFaType,
-  authenticatorMethod,
-} from "~/server/db/schemas/users/two-factor-methods";
+import { TWO_FA_TYPE } from "~/server/db/schemas/users/two-factor-methods";
 import { getSVG } from "qreator/lib/svg";
 import { currentUser } from "../user";
 import {
@@ -48,10 +45,8 @@ export const getAuthenticatorQr = async () => {
   });
   await addTwoFactorMethod({
     userID: user.id!,
-    config: {
-      method: "AUTHENTICATOR",
-      secret: secret.ascii,
-    },
+    data: secret.ascii,
+    type: TWO_FA_TYPE.AUTHENTICATOR,
     status: false,
   });
 
@@ -82,7 +77,7 @@ export const validateAuthCode = async (
 
   const existingAuthArray = await getTwoFactorMethodDetailsByType({
     userID: user.id!,
-    type: "AUTHENTICATOR",
+    type: TWO_FA_TYPE.AUTHENTICATOR,
   });
 
   console.log(existingAuthArray);
@@ -94,15 +89,21 @@ export const validateAuthCode = async (
     };
   }
   const methodData = existingAuthArray[0];
+  const authSecret = methodData?.data;
 
-  const authSecret = methodData?.data as authenticatorMethod;
+  if (!authSecret) {
+    return {
+      success: false,
+      message: "Invalid 2FA Secret Previously Saved",
+    };
+  }
 
-  console.log("secret", authSecret.secret);
+  console.log("secret", authSecret);
 
   let tokenValidates = speakeasy.totp.verify({
-    secret: authSecret?.secret,
+    secret: authSecret,
     token: validatedCode.data.code,
-    window: 10,
+    window: 2,
   });
 
   console.log("tokenValid: ", tokenValidates);

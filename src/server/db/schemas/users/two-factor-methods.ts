@@ -1,30 +1,24 @@
 import { v4 as uuidv4 } from "uuid";
 import { relations } from "drizzle-orm";
 import { createTable } from "../../utils";
-import { boolean, json, text, unique } from "drizzle-orm/pg-core";
+import { boolean, text, unique } from "drizzle-orm/pg-core";
 import { users } from "./user-account";
 
-export enum TwoFaType {
-  "SMS" = "SMS",
-  "EMAIL" = "Email",
-  "AUTHENTICATOR" = "Authenticator",
-}
+type EnumValues<T> = T[keyof T];
 
-type smsMethod = {
-  method: "SMS";
-  phone: string;
-};
+export const TWO_FA_TYPE = {
+  SMS: "SMS",
+  EMAIL: "EMAIL",
+  AUTHENTICATOR: "AUTHENTICATOR",
+} as const;
+export type TwoFaType = EnumValues<typeof TWO_FA_TYPE>;
 
-type emailMethod = {
-  method: "EMAIL";
-};
-
-export type authenticatorMethod = {
-  method: "AUTHENTICATOR";
-  secret: string;
-};
-
-export type twoFaMethod = smsMethod | emailMethod | authenticatorMethod;
+export const TWO_FA_LABELS = {
+  EMAIL: "Email a code",
+  SMS: "Get a Text Message",
+  AUTHENTICATOR: "Use an Authenticator App",
+} as const;
+export type TwoFaLabel = EnumValues<typeof TWO_FA_LABELS>;
 
 export type twoFactorDisplay = {
   method: string;
@@ -43,8 +37,12 @@ export const twoFactorMethod = createTable(
         return uuidv4();
       }),
     userID: text("user_id").notNull(),
-    twoFaData: json("two_factor_data").$type<twoFaMethod>(),
-    twoFaType: text("two_fa_type").notNull(),
+    twoFaData: text("two_Fa_Data"),
+    twoFaType: text("two_fa_type", {
+      enum: Object.keys(TWO_FA_TYPE) as [string, ...string[]],
+    })
+      .notNull()
+      .$type<TwoFaType>(),
     status: boolean("status").default(false).notNull(),
   },
   (t) => ({

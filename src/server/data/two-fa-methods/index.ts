@@ -1,22 +1,14 @@
 "use server";
 import { and, eq } from "drizzle-orm";
 import {
+  TWO_FA_LABELS,
+  TWO_FA_TYPE,
   TwoFaType,
-  twoFaMethod,
   twoFactorDisplay,
   twoFactorMethod,
 } from "~/server/db/schemas/users/two-factor-methods";
 import { db } from "~/server/db";
-import {
-  currentUser,
-  currentUserCanPerformAction,
-} from "~/server/auth/actions/user";
-
-const twoFaLabels = {
-  EMAIL: "Email a code",
-  SMS: "Get a Text Message",
-  AUTHENTICATOR: "Use an Authenticator App",
-};
+import { currentUserCanPerformAction } from "~/server/auth/actions/user";
 
 export const getTwoFactorDisplayMethodsByUser = async (
   userID: string,
@@ -32,7 +24,7 @@ export const getTwoFactorDisplayMethodsByUser = async (
     const displayResults = methods.map((item) => {
       return {
         method: item.twoFaType,
-        label: twoFaLabels[item.twoFaType as keyof typeof twoFaLabels],
+        label: TWO_FA_LABELS[item.twoFaType as keyof typeof TWO_FA_LABELS],
       } as twoFactorDisplay;
     });
     return displayResults;
@@ -42,17 +34,15 @@ export const getTwoFactorDisplayMethodsByUser = async (
 };
 
 export const addEmailTwoFactor = async ({ userID }: { userID: string }) => {
-  const config: twoFaMethod = { method: "EMAIL" };
   const hasMethod = await db.query.twoFactorMethod.findFirst({
     where:
       eq(twoFactorMethod.userID, userID) &&
-      eq(twoFactorMethod.twoFaType, config.method),
+      eq(twoFactorMethod.twoFaType, TWO_FA_TYPE.EMAIL),
   });
   if (!hasMethod) {
     await db.insert(twoFactorMethod).values({
       userID,
-      twoFaType: config.method,
-      twoFaData: config,
+      twoFaType: TWO_FA_TYPE.EMAIL,
       status: true,
     });
   }
@@ -60,24 +50,25 @@ export const addEmailTwoFactor = async ({ userID }: { userID: string }) => {
 
 export const addTwoFactorMethod = async ({
   userID,
-  config,
+  data,
+  type,
   status = false,
 }: {
   userID: string;
-  config: twoFaMethod;
+  data?: string;
+  type: TwoFaType;
   status: boolean;
 }) => {
   if (!(await currentUserCanPerformAction(userID))) return;
   const hasMethod = await db.query.twoFactorMethod.findFirst({
     where:
-      eq(twoFactorMethod.userID, userID) &&
-      eq(twoFactorMethod.twoFaType, config.method),
+      eq(twoFactorMethod.userID, userID) && eq(twoFactorMethod.twoFaType, type),
   });
   if (!hasMethod) {
     await db.insert(twoFactorMethod).values({
       userID,
-      twoFaType: config.method,
-      twoFaData: config,
+      twoFaType: type,
+      twoFaData: data,
       status: status,
     });
   }
@@ -96,9 +87,9 @@ export const removeTwoFactorMethod = async (
 };
 
 export type TwoFactorDetails = {
-  method: string;
+  method: TwoFaType;
   label: string;
-  data: twoFaMethod | null;
+  data: string | null;
   id: string;
   status: boolean;
 };
@@ -120,7 +111,7 @@ export const getTwoFactorMethodDetailsByUser = async ({
     const displayResults = methods.map((item) => {
       return {
         method: item.twoFaType,
-        label: twoFaLabels[item.twoFaType as keyof typeof twoFaLabels],
+        label: TWO_FA_LABELS[item.twoFaType as keyof typeof TWO_FA_TYPE],
         data: item.twoFaData,
         id: item.id,
         status: item.status,
@@ -137,12 +128,10 @@ export const getTwoFactorMethodDetailsByType = async ({
   type,
 }: {
   userID: string;
-  type: string;
+  type: TwoFaType;
 }): Promise<TwoFactorDetails[] | null> => {
   if (!userID || !(await currentUserCanPerformAction(userID))) return null;
 
-  console.log("UserID: ", userID);
-  console.log("Type: ", type);
   try {
     const methods = await db.query.twoFactorMethod.findMany({
       where: and(
@@ -151,12 +140,10 @@ export const getTwoFactorMethodDetailsByType = async ({
       ),
     });
 
-    console.log("methods", methods);
-
     const displayResults = methods.map((item) => {
       return {
         method: item.twoFaType,
-        label: twoFaLabels[item.twoFaType as keyof typeof twoFaLabels],
+        label: TWO_FA_LABELS[item.twoFaType as keyof typeof TWO_FA_LABELS],
         data: item.twoFaData,
         id: item.id,
         status: item.status,

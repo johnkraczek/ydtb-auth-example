@@ -18,9 +18,10 @@ import {
 import { Button } from "../../ui/button";
 import { MdNewLabel } from "react-icons/md";
 import { Unlink2FADialog } from "./unlink-2fa-dialog";
-import { TwoFaType } from "~/server/db/schemas/users/two-factor-methods";
+
 import SetupSMS from "./setup-sms";
 import SetupAuthenticator from "./setup-authenticator";
+import { TWO_FA_TYPE } from "~/server/db/schemas/users/two-factor-methods";
 
 export const TwoFactorList = () => {
   const user = useCurrentUser();
@@ -64,8 +65,8 @@ export const TwoFactorList = () => {
     }
     return (
       <TableCell className="text-right">
-        {label == TwoFaType.AUTHENTICATOR && <SetupAuthenticator />}
-        {label == TwoFaType.SMS && <SetupSMS />}
+        {label == TWO_FA_TYPE.AUTHENTICATOR && <SetupAuthenticator />}
+        {label == TWO_FA_TYPE.SMS && <SetupSMS />}
       </TableCell>
     );
   };
@@ -79,8 +80,8 @@ export const TwoFactorList = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Object.keys(TwoFaType).map((item) => {
-          const label = TwoFaType[item as keyof typeof TwoFaType];
+        {Object.keys(TWO_FA_TYPE).map((item) => {
+          const label = TWO_FA_TYPE[item as keyof typeof TWO_FA_TYPE];
           return (
             <TableRow key={item}>
               <TableCell>{label}</TableCell>

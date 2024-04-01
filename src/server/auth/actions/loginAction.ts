@@ -15,6 +15,7 @@ import { twoFactorDisplay } from "~/server/db/schemas/users/two-factor-methods";
 import { TokenType } from "~/server/db/schemas/users/user-token";
 import { generateToken, validateToken } from "~/server/data/tokens/token";
 import { sendTwoFactorConfEmail } from "~/server/mail/actions/emails";
+import { confirmValidAuthCode } from "./account/manage2Fa";
 
 type successResult = {
   success: true;
@@ -101,6 +102,7 @@ export const loginAction = async (
       if (!code) {
         // handle sending the code via the chosen method
         let newToken;
+        let message;
         console.log("Method: ", method);
         if (method === "SMS") {
           newToken = await generateToken(
@@ -108,6 +110,7 @@ export const loginAction = async (
             TokenType.TWOFA_SMS_TOKEN,
           );
           // @TODO add SMS provider
+          message = "Code Sent Via SMS";
         }
         if (method === "EMAIL") {
           newToken = await generateToken(
@@ -119,22 +122,24 @@ export const loginAction = async (
             email: existingUser.email,
             validationCode: newToken,
           });
+          message = "Code Sent Via Email";
         }
         if (method === "AUTHENTICATOR") {
           //@TODO Add Authenticator 2fa type
+          console.log("Running Authenticator step");
+          console.log(method);
+          message = "Get Code from Auth App";
         }
 
         return {
           success: "2FA-Confirm",
-          message:
-            (method == "SMS" || "EMAIL"
-              ? "Code Sent Via: "
-              : "Get code from: ") + method,
+          message: message || "Success",
         };
       }
-
+      console.log("Method2: ", method);
       if (code) {
-        if (method === "SMS" || "EMAIL") {
+        if (method === "SMS" || method === "EMAIL") {
+          console.log("entering sms or email");
           const type =
             method == "EMAIL"
               ? TokenType.TWOFA_EMAIL_TOKEN
@@ -156,8 +161,18 @@ export const loginAction = async (
           // generateConfirmationToken(existingUser.email, 600);
         }
 
-        if (method === "authenticator") {
-          //@TODO verify the authenticator method
+        if (method === "AUTHENTICATOR") {
+          const result = await confirmValidAuthCode({
+            code,
+            userID: existingUser.id,
+          });
+          if (!result.success) {
+            return {
+              success: "2FA-Conf-Fail",
+              message: "Invalid 2FA Code",
+            };
+          }
+          generateConfirmationToken(existingUser.email);
         }
       }
     }

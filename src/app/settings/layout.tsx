@@ -5,6 +5,7 @@ import { Card, CardContent } from "~/client/components/ui/card";
 import { UserButton } from "~/client/components/auth/user-button";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "~/server/auth";
+import { Toaster } from "~/client/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Settings",
@@ -74,6 +75,7 @@ export default async function SettingsLayout({
           </CardContent>
         </Card>
       </div>
+      <Toaster />
     </SessionProvider>
   );
 }

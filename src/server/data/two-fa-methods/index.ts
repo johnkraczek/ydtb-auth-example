@@ -9,7 +9,21 @@ import {
   twoFactorMethod,
 } from "~/server/db/schemas/users/two-factor-methods";
 import { db } from "~/server/db";
-import { currentUserCanPerformAction } from "~/server/auth/actions/user";
+import {
+  currentUser,
+  currentUserCanPerformAction,
+} from "~/server/auth/actions/user";
+import { UserRole } from "~/server/db/schemas/users/user-account";
+import { Result } from "~/types/result";
+
+export type TwoFactorDetails = {
+  method: TwoFaType;
+  label: string;
+  display: string;
+  id: string;
+  status: boolean;
+  data: string | undefined;
+};
 
 export const getTwoFactorDisplayMethodsByUser = async (
   userID: string,
@@ -81,7 +95,6 @@ export const addTwoFactorMethod = async ({
 export const removeTwoFactorMethod = async (
   userID?: string,
   methodID?: string,
-  type?: TwoFaType,
 ) => {
   if (!userID || !methodID || !(await currentUserCanPerformAction(userID)))
     return;
@@ -93,15 +106,6 @@ export const removeTwoFactorMethod = async (
     .where(
       and(eq(twoFactorMethod.id, methodID), eq(twoFactorMethod.userID, userID)),
     );
-};
-
-export type TwoFactorDetails = {
-  method: TwoFaType;
-  label: string;
-  display: string;
-  id: string;
-  status: boolean;
-  data: string | undefined;
 };
 
 export const getTwoFactorMethodDetailsByUser = async ({
@@ -198,6 +202,20 @@ export const getTwoFactorDataByID = async ({
   }
 };
 
+export const userHasTwoFactorType = async ({ type }: { type: TwoFaType }) => {
+  const user = await currentUser();
+  if (!user) return false;
+  const methodQuery = await db.query.twoFactorMethod.findFirst({
+    where: and(
+      eq(twoFactorMethod.userID, user.id!),
+      eq(twoFactorMethod.twoFaType, type),
+    ),
+  });
+
+  if (!methodQuery || !methodQuery.status) return false;
+  return methodQuery.id;
+};
+
 export const setMethodStatus = async ({
   userID,
   methodID,
@@ -215,4 +233,75 @@ export const setMethodStatus = async ({
     .where(
       and(eq(twoFactorMethod.userID, userID), eq(twoFactorMethod.id, methodID)),
     );
+};
+
+export const removeTwoFactorMethodByID = async ({
+  methodID,
+}: {
+  methodID: string;
+}): Promise<Result> => {
+  const user = await currentUser();
+  if (!user)
+    return {
+      success: false,
+      message: "No User",
+    };
+
+  const methodQuery = await db.query.twoFactorMethod.findFirst({
+    where: and(
+      eq(twoFactorMethod.userID, user.id!),
+      eq(twoFactorMethod.id, methodID),
+    ),
+  });
+
+  if (!methodQuery)
+    return {
+      success: false,
+      message: "no current method",
+    };
+
+  if (methodQuery.userID != user.id! && !user.roles.includes(UserRole.ADMIN))
+    return {
+      success: false,
+      message: "Bad Permissions",
+    };
+
+  await db
+    .delete(twoFactorMethod)
+    .where(
+      and(
+        eq(twoFactorMethod.id, methodID),
+        eq(twoFactorMethod.userID, user.id!),
+      ),
+    );
+
+  return {
+    success: true,
+    message: "Removed 2FA Method",
+  };
+};
+
+export const getTwoFactorDataByType = async ({
+  userID,
+  type,
+}: {
+  userID: string;
+  type: TwoFaType;
+}) => {
+  try {
+    const method = await db.query.twoFactorMethod.findFirst({
+      where: and(
+        eq(twoFactorMethod.userID, userID),
+        eq(twoFactorMethod.twoFaType, type),
+      ),
+    });
+
+    if (!method) return;
+
+    return {
+      data: method.twoFaData,
+    };
+  } catch (e) {
+    return null;
+  }
 };

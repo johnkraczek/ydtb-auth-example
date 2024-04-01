@@ -5,6 +5,7 @@ import { getSVG } from "qreator/lib/svg";
 import { currentUser } from "../user";
 import {
   addTwoFactorMethod,
+  getTwoFactorDataByType,
   getTwoFactorMethodDetailsByType,
   removeTwoFactorMethod,
   setMethodStatus,
@@ -56,12 +57,14 @@ export const getAuthenticatorQr = async () => {
   });
 };
 
-export const validateAuthCode = async (
+// first time auth code validation
+export const validateFirstAuthCode = async (
   values: z.infer<typeof TwoFaCodeSchema>,
 ): Promise<Result> => {
   const validatedCode = TwoFaCodeSchema.safeParse(values);
 
   if (!validatedCode.success) {
+    console.log("fields not valid");
     return {
       success: false,
       message: "Invalid fields",
@@ -69,11 +72,13 @@ export const validateAuthCode = async (
   }
 
   const user = await currentUser();
-  if (!user)
+  if (!user) {
+    console.log("invalid user");
     return {
       success: false,
       message: "Invalid Login To Link",
     };
+  }
 
   const existingAuthArray = await getTwoFactorMethodDetailsByType({
     userID: user.id!,
@@ -108,6 +113,44 @@ export const validateAuthCode = async (
       methodID: methodData!.id,
       status: true,
     });
+    return {
+      success: true,
+      message: "Auth Linked Successfully",
+    };
+  }
+
+  return {
+    success: false,
+    message: "Something went wrong.",
+  };
+};
+
+export const confirmValidAuthCode = async ({
+  code,
+  userID,
+}: {
+  code: string;
+  userID: string;
+}): Promise<Result> => {
+  const methodData = await getTwoFactorDataByType({
+    userID: userID!,
+    type: TWO_FA_TYPE.AUTHENTICATOR,
+  });
+
+  if (!methodData || methodData.data == null) {
+    return {
+      success: false,
+      message: "Invalid 2FA Secret Previously Saved",
+    };
+  }
+
+  let tokenValidates = speakeasy.totp.verify({
+    secret: methodData.data,
+    token: code,
+    window: 2,
+  });
+
+  if (tokenValidates) {
     return {
       success: true,
       message: "Auth Linked Successfully",

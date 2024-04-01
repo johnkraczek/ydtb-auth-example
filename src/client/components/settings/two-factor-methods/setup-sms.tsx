@@ -13,11 +13,13 @@ const SetupSMS = () => {
   return (
     <Dialog>
       <DialogTrigger>
-        <Button className="w-52" variant={"outline"}>
-          Setup SMS
-          <span className="pl-3">
-            <MdNewLabel size={25} />
-          </span>
+        <Button className="w-52" variant={"outline"} asChild>
+          <div>
+            Setup SMS
+            <span className="pl-3">
+              <MdNewLabel size={25} />
+            </span>
+          </div>
         </Button>
       </DialogTrigger>
       <DialogContent>

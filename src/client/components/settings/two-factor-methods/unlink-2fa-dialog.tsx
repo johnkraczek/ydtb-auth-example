@@ -12,13 +12,6 @@ import {
   AlertDialogTrigger,
 } from "../../ui/alert-dialog";
 import { Button } from "../../ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../../ui/tooltip";
-import { Arrow } from "@radix-ui/react-tooltip";
 
 export const Unlink2FADialog = ({
   alertTitle,
@@ -33,41 +26,31 @@ export const Unlink2FADialog = ({
 }) => {
   return (
     <AlertDialog>
-      <TooltipProvider>
-        <AlertDialogTrigger disabled={!disabled}>
-          {disabled ? (
-            <Button className="w-52" asChild variant={"destructive"}>
-              <div>
-                Remove
-                <span className="pl-2">
-                  <FaRegTrashAlt />
-                </span>
-              </div>
-            </Button>
-          ) : (
-            <Tooltip>
-              <TooltipTrigger>
-                <Button
-                  className="w-52 cursor-not-allowed"
-                  asChild
-                  variant={"success"}
-                >
-                  <div>
-                    Primary 2FA
-                    <span className="pl-2">
-                      <TbTrashOff size={20} />
-                    </span>
-                  </div>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Can't Remove your last 2FA method.</p>
-                <Arrow className="TooltipArrow" />
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </AlertDialogTrigger>
-      </TooltipProvider>
+      <AlertDialogTrigger disabled={disabled}>
+        {!disabled ? (
+          <Button className="w-52" asChild variant={"destructive"}>
+            <div>
+              Remove Method
+              <span className="pl-2">
+                <FaRegTrashAlt />
+              </span>
+            </div>
+          </Button>
+        ) : (
+          <Button
+            className="w-52 cursor-not-allowed"
+            asChild
+            variant={"success"}
+          >
+            <div>
+              Primary 2FA
+              <span className="pl-2">
+                <TbTrashOff size={20} />
+              </span>
+            </div>
+          </Button>
+        )}
+      </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{alertTitle}</AlertDialogTitle>

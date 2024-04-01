@@ -24,7 +24,7 @@ export const getAuthenticatorQr = async () => {
 
   const existingAuthArray = await getTwoFactorMethodDetailsByType({
     userID: user.id!,
-    type: "AUTHENTICATOR",
+    type: TWO_FA_TYPE.AUTHENTICATOR,
   });
 
   if (!existingAuthArray) return null;
@@ -80,8 +80,6 @@ export const validateAuthCode = async (
     type: TWO_FA_TYPE.AUTHENTICATOR,
   });
 
-  console.log(existingAuthArray);
-
   if (existingAuthArray?.length != 1 || existingAuthArray[0]!.status != false) {
     return {
       success: false,
@@ -98,15 +96,11 @@ export const validateAuthCode = async (
     };
   }
 
-  console.log("secret", authSecret);
-
   let tokenValidates = speakeasy.totp.verify({
     secret: authSecret,
     token: validatedCode.data.code,
     window: 2,
   });
-
-  console.log("tokenValid: ", tokenValidates);
 
   if (tokenValidates) {
     await setMethodStatus({

@@ -1,6 +1,7 @@
 "use server";
 import { and, eq } from "drizzle-orm";
 import {
+  TWO_FA_DISPLAY,
   TWO_FA_LABELS,
   TWO_FA_TYPE,
   TwoFaType,
@@ -35,9 +36,10 @@ export const getTwoFactorDisplayMethodsByUser = async (
 
 export const addEmailTwoFactor = async ({ userID }: { userID: string }) => {
   const hasMethod = await db.query.twoFactorMethod.findFirst({
-    where:
-      eq(twoFactorMethod.userID, userID) &&
+    where: and(
+      eq(twoFactorMethod.userID, userID),
       eq(twoFactorMethod.twoFaType, TWO_FA_TYPE.EMAIL),
+    ),
   });
   if (!hasMethod) {
     await db.insert(twoFactorMethod).values({
@@ -61,8 +63,10 @@ export const addTwoFactorMethod = async ({
 }) => {
   if (!(await currentUserCanPerformAction(userID))) return;
   const hasMethod = await db.query.twoFactorMethod.findFirst({
-    where:
-      eq(twoFactorMethod.userID, userID) && eq(twoFactorMethod.twoFaType, type),
+    where: and(
+      eq(twoFactorMethod.userID, userID),
+      eq(twoFactorMethod.twoFaType, type),
+    ),
   });
   if (!hasMethod) {
     await db.insert(twoFactorMethod).values({
@@ -75,23 +79,29 @@ export const addTwoFactorMethod = async ({
 };
 
 export const removeTwoFactorMethod = async (
-  userID: string,
-  methodID: string,
+  userID?: string,
+  methodID?: string,
+  type?: TwoFaType,
 ) => {
-  if (!(await currentUserCanPerformAction(userID))) return;
+  if (!userID || !methodID || !(await currentUserCanPerformAction(userID)))
+    return;
+
+  console.log("Deleting Method: ", methodID);
+
   await db
     .delete(twoFactorMethod)
     .where(
-      eq(twoFactorMethod.id, methodID) && eq(twoFactorMethod.userID, userID),
+      and(eq(twoFactorMethod.id, methodID), eq(twoFactorMethod.userID, userID)),
     );
 };
 
 export type TwoFactorDetails = {
   method: TwoFaType;
   label: string;
-  data: string | null;
+  display: string;
   id: string;
   status: boolean;
+  data: string | undefined;
 };
 
 export const getTwoFactorMethodDetailsByUser = async ({
@@ -112,9 +122,10 @@ export const getTwoFactorMethodDetailsByUser = async ({
       return {
         method: item.twoFaType,
         label: TWO_FA_LABELS[item.twoFaType as keyof typeof TWO_FA_TYPE],
-        data: item.twoFaData,
+        display: TWO_FA_DISPLAY[item.twoFaType as keyof typeof TWO_FA_TYPE],
         id: item.id,
         status: item.status,
+        data: undefined,
       };
     });
     return displayResults;
@@ -143,13 +154,45 @@ export const getTwoFactorMethodDetailsByType = async ({
     const displayResults = methods.map((item) => {
       return {
         method: item.twoFaType,
-        label: TWO_FA_LABELS[item.twoFaType as keyof typeof TWO_FA_LABELS],
-        data: item.twoFaData,
+        label: TWO_FA_LABELS[item.twoFaType as keyof typeof TWO_FA_TYPE],
+        display: TWO_FA_DISPLAY[item.twoFaType as keyof typeof TWO_FA_TYPE],
         id: item.id,
         status: item.status,
+        data: item.twoFaData || undefined,
       };
     });
     return displayResults;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const getTwoFactorDataByID = async ({
+  userID,
+  methodID,
+}: {
+  userID: string;
+  methodID: string;
+}): Promise<TwoFactorDetails | null> => {
+  if (!userID || !(await currentUserCanPerformAction(userID))) return null;
+  try {
+    const method = await db.query.twoFactorMethod.findFirst({
+      where: and(
+        eq(twoFactorMethod.userID, userID),
+        eq(twoFactorMethod.id, methodID),
+      ),
+    });
+
+    if (!method) return null;
+
+    return {
+      method: method.twoFaType,
+      label: TWO_FA_LABELS[method.twoFaType as keyof typeof TWO_FA_TYPE],
+      display: TWO_FA_DISPLAY[method.twoFaType as keyof typeof TWO_FA_TYPE],
+      id: method.id,
+      status: method.status,
+      data: method.twoFaData || undefined,
+    };
   } catch (e) {
     return null;
   }

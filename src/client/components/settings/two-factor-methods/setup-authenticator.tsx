@@ -48,6 +48,7 @@ enum steps {
 const SetupAuthenticator = () => {
   const [setupStep, setSetupStep] = useState(steps.welcome);
   const [qrURL, setQrURL] = useState("");
+  const [open, setOpen] = useState(false);
 
   const openHandler = async (open: boolean) => {
     if (open) {
@@ -68,20 +69,28 @@ const SetupAuthenticator = () => {
   };
 
   return (
-    <Dialog onOpenChange={openHandler}>
+    <Dialog open={open} onOpenChange={openHandler}>
       <DialogTrigger>
-        <Button className="w-52" variant={"outline"}>
-          Setup Authenticator
-          <span className="pl-3">
-            <MdNewLabel size={25} />
-          </span>
+        <Button
+          className="w-52"
+          variant={"outline"}
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          <>
+            Setup Authenticator
+            <span className="pl-3">
+              <MdNewLabel size={25} />
+            </span>
+          </>
         </Button>
       </DialogTrigger>
       <DialogContent className="min-h-96">
         {setupStep == steps.welcome && (
           <WelcomeStep qrURL={qrURL} setState={setSetupStep} />
         )}
-        {setupStep == steps.getCode && <GetCode />}
+        {setupStep == steps.getCode && <GetCode setOpen={setOpen} />}
       </DialogContent>
     </Dialog>
   );
@@ -121,7 +130,11 @@ const WelcomeStep = ({
   );
 };
 
-const GetCode = () => {
+const GetCode = ({
+  setOpen,
+}: {
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -140,6 +153,8 @@ const GetCode = () => {
     startTransition(async () => {
       const results = await validateAuthCode(values);
       results.success ? setSuccess(results.message) : setError(results.message);
+      await sleep(2000);
+      setOpen(false);
     });
   };
 

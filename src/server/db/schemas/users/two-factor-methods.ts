@@ -13,6 +13,12 @@ export const TWO_FA_TYPE = {
 } as const;
 export type TwoFaType = EnumValues<typeof TWO_FA_TYPE>;
 
+export const TWO_FA_DISPLAY = {
+  SMS: "SMS",
+  EMAIL: "Email",
+  AUTHENTICATOR: "Authenticator",
+};
+
 export const TWO_FA_LABELS = {
   EMAIL: "Email a code",
   SMS: "Get a Text Message",

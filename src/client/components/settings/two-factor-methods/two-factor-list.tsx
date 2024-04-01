@@ -15,13 +15,15 @@ import {
   TableHeader,
   TableRow,
 } from "../../ui/table";
-import { Button } from "../../ui/button";
-import { MdNewLabel } from "react-icons/md";
 import { Unlink2FADialog } from "./unlink-2fa-dialog";
 
 import SetupSMS from "./setup-sms";
 import SetupAuthenticator from "./setup-authenticator";
-import { TWO_FA_TYPE } from "~/server/db/schemas/users/two-factor-methods";
+import {
+  TWO_FA_DISPLAY,
+  TWO_FA_TYPE,
+  TwoFaType,
+} from "~/server/db/schemas/users/two-factor-methods";
 
 export const TwoFactorList = () => {
   const user = useCurrentUser();
@@ -39,24 +41,29 @@ export const TwoFactorList = () => {
     });
   }, []);
 
-  const getMethodStatus = ({
-    label,
-    method,
-  }: {
-    label: string;
-    method: string;
-  }): React.ReactNode => {
-    const result = methods.find((item) => {
-      return item.method == method;
+  const getMethodByType = (type: TwoFaType) => {
+    return methods.find((item) => {
+      return item.method == type;
     });
-    if (result) {
+  };
+
+  const getMethodStatus = ({
+    method,
+    display,
+    methodID,
+  }: {
+    method?: TwoFaType;
+    display?: string;
+    methodID?: string;
+  }): React.ReactNode => {
+    if (methodID) {
       return (
         <TableCell className="text-right">
           <Unlink2FADialog
-            alertTitle={`Unlink ${label} 2FA from your account?`}
+            alertTitle={`Unlink ${display} 2FA from your account?`}
             alertMessage={`You are about to unlink this 2FA provider from your account. Are you sure you want to do this?`}
             onConfirm={() => {
-              removeTwoFactorMethod(user!.id!, result.id);
+              removeTwoFactorMethod(user!.id, methodID);
             }}
             disabled={false}
           />
@@ -65,8 +72,9 @@ export const TwoFactorList = () => {
     }
     return (
       <TableCell className="text-right">
-        {label == TWO_FA_TYPE.AUTHENTICATOR && <SetupAuthenticator />}
-        {label == TWO_FA_TYPE.SMS && <SetupSMS />}
+        {method == TWO_FA_TYPE.EMAIL && <div>EMAIL</div>}
+        {method == TWO_FA_TYPE.AUTHENTICATOR && <SetupAuthenticator />}
+        {method == TWO_FA_TYPE.SMS && <SetupSMS />}
       </TableCell>
     );
   };
@@ -81,11 +89,16 @@ export const TwoFactorList = () => {
       </TableHeader>
       <TableBody>
         {Object.keys(TWO_FA_TYPE).map((item) => {
-          const label = TWO_FA_TYPE[item as keyof typeof TWO_FA_TYPE];
+          const method = item as TwoFaType;
+          const result = getMethodByType(method);
           return (
             <TableRow key={item}>
-              <TableCell>{label}</TableCell>
-              {getMethodStatus({ label, method: item })}
+              <TableCell>{TWO_FA_DISPLAY[method]}</TableCell>
+              {getMethodStatus({
+                method,
+                methodID: result?.id,
+                display: result?.display,
+              })}
             </TableRow>
           );
         })}

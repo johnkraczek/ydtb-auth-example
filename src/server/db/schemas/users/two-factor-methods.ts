@@ -19,7 +19,7 @@ type emailMethod = {
   method: "EMAIL";
 };
 
-type authenticatorMethod = {
+export type authenticatorMethod = {
   method: "AUTHENTICATOR";
   secret: string;
 };
@@ -45,7 +45,7 @@ export const twoFactorMethod = createTable(
     userID: text("user_id").notNull(),
     twoFaData: json("two_factor_data").$type<twoFaMethod>(),
     twoFaType: text("two_fa_type").notNull(),
-    status: boolean("status").default(false),
+    status: boolean("status").default(false).notNull(),
   },
   (t) => ({
     uniquePair: unique().on(t.twoFaType, t.userID),

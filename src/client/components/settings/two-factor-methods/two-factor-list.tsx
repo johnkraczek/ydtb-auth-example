@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useCurrentUser } from "~/client/hooks/use-current-user";
 import {
   TwoFactorDetails,
-  getTwoFactorDetailsByUser,
+  getTwoFactorMethodDetailsByUser,
   removeTwoFactorMethod,
 } from "~/server/data/two-fa-methods";
 import {
@@ -29,7 +29,9 @@ export const TwoFactorList = () => {
 
   useEffect(() => {
     startTransition(async () => {
-      const results = await getTwoFactorDetailsByUser({ userID: user!.id });
+      const results = await getTwoFactorMethodDetailsByUser({
+        userID: user!.id,
+      });
       if (results) {
         setMethods(results);
       }

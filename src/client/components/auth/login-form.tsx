@@ -53,6 +53,8 @@ export const LoginForm = () => {
 
     startTransition(async () => {
       const results = await loginAction(values);
+      console.log(results);
+
       if (!results.success) {
         form.reset();
         return setError(results.message);

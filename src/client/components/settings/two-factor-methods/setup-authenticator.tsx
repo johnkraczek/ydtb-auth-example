@@ -10,35 +10,48 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "../../ui/dialog";
-import { useEffect, useState, useTransition } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import { TwoFaCodeSchema } from "~/validation/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getAuthenticatorQr } from "~/server/auth/actions/account/manage2Fa";
+import {
+  getAuthenticatorQr,
+  validateAuthCode,
+} from "~/server/auth/actions/account/manage2Fa";
 import { sleep } from "../../utils";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../../ui/form";
+import { ShowSuccess } from "../../basic/success-display";
+import { ShowError } from "../../basic/error-display";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "../../ui/input-otp";
 
 enum steps {
   "welcome",
-  "get-code",
-  "verify",
+  "getCode",
+  "completed",
 }
 
 const SetupAuthenticator = () => {
   const [setupStep, setSetupStep] = useState(steps.welcome);
   const [qrURL, setQrURL] = useState("");
-  const [isPending, startTransition] = useTransition();
 
-  const form = useForm<Zod.infer<typeof TwoFaCodeSchema>>({
-    resolver: zodResolver(TwoFaCodeSchema),
-    defaultValues: {
-      code: "",
-    },
-  });
-
-  useEffect(() => {
-    startTransition(async () => {
+  const openHandler = async (open: boolean) => {
+    if (open) {
       const results = await getAuthenticatorQr();
-
       if (!results) return;
       const imgData = String.fromCharCode.apply(
         null,
@@ -47,17 +60,15 @@ const SetupAuthenticator = () => {
       setQrURL(
         URL.createObjectURL(new Blob([imgData], { type: "image/svg+xml" })),
       );
-    });
-  }, []);
+    }
 
-  const closeHandler = async (open: boolean) => {
     // close the dialog first and then set the steps back to welcome
     await sleep(500);
     if (!open) setSetupStep(steps.welcome);
   };
 
   return (
-    <Dialog onOpenChange={closeHandler}>
+    <Dialog onOpenChange={openHandler}>
       <DialogTrigger>
         <Button className="w-52" variant={"outline"}>
           Setup Authenticator
@@ -67,26 +78,23 @@ const SetupAuthenticator = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="min-h-96">
-        {setupStep == steps.welcome && <WelcomeStep qrURL={qrURL} />}
-        <DialogFooter>
-          {setupStep == steps.welcome && (
-            <Button
-              asChild
-              onClick={() => {
-                setSetupStep(steps["get-code"]);
-              }}
-            >
-              <p>Confirm Your Code</p>
-            </Button>
-          )}
-        </DialogFooter>
+        {setupStep == steps.welcome && (
+          <WelcomeStep qrURL={qrURL} setState={setSetupStep} />
+        )}
+        {setupStep == steps.getCode && <GetCode />}
       </DialogContent>
     </Dialog>
   );
 };
 export default SetupAuthenticator;
 
-const WelcomeStep = ({ qrURL }: { qrURL: string }) => {
+const WelcomeStep = ({
+  qrURL,
+  setState,
+}: {
+  qrURL: string;
+  setState: Dispatch<SetStateAction<steps>>;
+}) => {
   return (
     <>
       <DialogHeader>
@@ -99,6 +107,95 @@ const WelcomeStep = ({ qrURL }: { qrURL: string }) => {
       <div className="p-20">
         <img src={qrURL}></img>
       </div>
+      <DialogFooter>
+        <Button
+          asChild
+          onClick={() => {
+            setState(steps.getCode);
+          }}
+        >
+          <p>Enter First Code</p>
+        </Button>
+      </DialogFooter>
+    </>
+  );
+};
+
+const GetCode = () => {
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<Zod.infer<typeof TwoFaCodeSchema>>({
+    resolver: zodResolver(TwoFaCodeSchema),
+    defaultValues: {
+      code: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof TwoFaCodeSchema>) => {
+    setError("");
+    setSuccess("");
+
+    startTransition(async () => {
+      const results = await validateAuthCode(values);
+      results.success ? setSuccess(results.message) : setError(results.message);
+    });
+  };
+
+  return (
+    <>
+      <DialogHeader>
+        <DialogTitle>Enter the code from you app</DialogTitle>
+        <DialogDescription className="py-5 text-center">
+          Your app should now be giving you Time Based Codes, <br /> Enter the
+          current one here.
+        </DialogDescription>
+      </DialogHeader>
+
+      <Form {...form}>
+        <form
+          className="space-y-6 text-center"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
+          <div className="flex justify-center space-y-4 pt-3">
+            <FormField
+              control={form.control}
+              name="code"
+              render={({ field }) => (
+                <FormItem className="flex flex-col justify-center">
+                  <FormLabel className="self-center p-4">
+                    One-Time Password
+                  </FormLabel>
+                  <FormControl className="text-center">
+                    <InputOTP disabled={isPending} maxLength={6} {...field}>
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </FormControl>
+                  <FormDescription className="self-center">
+                    Please enter the one-time code.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <ShowSuccess message={success} />
+          <ShowError message={error} />
+
+          <Button type="submit" disabled={isPending}>
+            Submit Code
+          </Button>
+        </form>
+      </Form>
     </>
   );
 };

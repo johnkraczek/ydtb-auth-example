@@ -101,40 +101,42 @@ export const loginAction = async (
       if (!code) {
         // handle sending the code via the chosen method
         let newToken;
-        if (method === "sms") {
+        console.log("Method: ", method);
+        if (method === "SMS") {
           newToken = await generateToken(
             existingUser.email,
             TokenType.TWOFA_SMS_TOKEN,
           );
           // @TODO add SMS provider
         }
-        if (method === "email") {
+        if (method === "EMAIL") {
           newToken = await generateToken(
             existingUser.email,
             TokenType.TWOFA_EMAIL_TOKEN,
           );
+          console.log("Send Email");
           sendTwoFactorConfEmail({
             email: existingUser.email,
             validationCode: newToken,
           });
         }
-        if (method === "authenticator") {
+        if (method === "AUTHENTICATOR") {
           //@TODO Add Authenticator 2fa type
         }
 
         return {
           success: "2FA-Confirm",
           message:
-            (method == "sms" || "email"
+            (method == "SMS" || "EMAIL"
               ? "Code Sent Via: "
               : "Get code from: ") + method,
         };
       }
 
       if (code) {
-        if (method === "sms" || "email") {
+        if (method === "SMS" || "EMAIL") {
           const type =
-            method == "email"
+            method == "EMAIL"
               ? TokenType.TWOFA_EMAIL_TOKEN
               : TokenType.TWOFA_SMS_TOKEN;
           const tokenIsValid = await validateToken(

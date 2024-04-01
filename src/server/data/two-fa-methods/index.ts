@@ -13,9 +13,9 @@ import {
 } from "~/server/auth/actions/user";
 
 const twoFaLabels = {
-  email: "Email a code",
-  sms: "Get a Text Message",
-  authenticator: "Use an Authenticator App",
+  EMAIL: "Email a code",
+  SMS: "Get a Text Message",
+  AUTHENTICATOR: "Use an Authenticator App",
 };
 
 export const getTwoFactorDisplayMethodsByUser = async (
@@ -61,9 +61,11 @@ export const addEmailTwoFactor = async ({ userID }: { userID: string }) => {
 export const addTwoFactorMethod = async ({
   userID,
   config,
+  status = false,
 }: {
   userID: string;
   config: twoFaMethod;
+  status: boolean;
 }) => {
   if (!(await currentUserCanPerformAction(userID))) return;
   const hasMethod = await db.query.twoFactorMethod.findFirst({
@@ -76,6 +78,7 @@ export const addTwoFactorMethod = async ({
       userID,
       twoFaType: config.method,
       twoFaData: config,
+      status: status,
     });
   }
 };
@@ -97,9 +100,10 @@ export type TwoFactorDetails = {
   label: string;
   data: twoFaMethod | null;
   id: string;
+  status: boolean;
 };
 
-export const getTwoFactorDetailsByUser = async ({
+export const getTwoFactorMethodDetailsByUser = async ({
   userID,
 }: {
   userID?: string;
@@ -119,6 +123,7 @@ export const getTwoFactorDetailsByUser = async ({
         label: twoFaLabels[item.twoFaType as keyof typeof twoFaLabels],
         data: item.twoFaData,
         id: item.id,
+        status: item.status,
       };
     });
     return displayResults;
@@ -127,12 +132,57 @@ export const getTwoFactorDetailsByUser = async ({
   }
 };
 
-export const maybeRemoveTwoFactorMethod = async (type: TwoFaType) => {
-  const user = await currentUser();
-  if (!user) return false;
+export const getTwoFactorMethodDetailsByType = async ({
+  userID,
+  type,
+}: {
+  userID: string;
+  type: string;
+}): Promise<TwoFactorDetails[] | null> => {
+  if (!userID || !(await currentUserCanPerformAction(userID))) return null;
 
+  console.log("UserID: ", userID);
+  console.log("Type: ", type);
   try {
+    const methods = await db.query.twoFactorMethod.findMany({
+      where: and(
+        eq(twoFactorMethod.userID, userID),
+        eq(twoFactorMethod.twoFaType, type),
+      ),
+    });
+
+    console.log("methods", methods);
+
+    const displayResults = methods.map((item) => {
+      return {
+        method: item.twoFaType,
+        label: twoFaLabels[item.twoFaType as keyof typeof twoFaLabels],
+        data: item.twoFaData,
+        id: item.id,
+        status: item.status,
+      };
+    });
+    return displayResults;
   } catch (e) {
-    return false;
+    return null;
   }
+};
+
+export const setMethodStatus = async ({
+  userID,
+  methodID,
+  status,
+}: {
+  userID: string;
+  methodID: string;
+  status: boolean;
+}) => {
+  if (!userID || !(await currentUserCanPerformAction(userID))) return null;
+
+  await db
+    .update(twoFactorMethod)
+    .set({ status: status })
+    .where(
+      and(eq(twoFactorMethod.userID, userID), eq(twoFactorMethod.id, methodID)),
+    );
 };

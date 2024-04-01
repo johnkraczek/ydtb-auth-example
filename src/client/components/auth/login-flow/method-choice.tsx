@@ -44,7 +44,9 @@ export const MethodChoice = ({
                   >
                     <FormItem className="flex items-center space-x-3 space-y-0">
                       <FormControl>
-                        <RadioGroupItem value={method.method} />
+                        <RadioGroupItem value={method.method}>
+                          {method.label}
+                        </RadioGroupItem>
                       </FormControl>
                       <FormLabel className="font-normal">
                         {method.label}

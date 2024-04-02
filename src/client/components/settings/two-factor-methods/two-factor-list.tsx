@@ -7,9 +7,9 @@ import {
   TableRow,
 } from "../../ui/table";
 
-import SetupSMS from "./setup-sms";
-import SetupEmail from "./setup-email";
+import { Email2FaButton } from "~/client/components/settings/two-factor-methods/email/setup-email";
 import { AuthenticatorButton } from "./authenticator/authenticator-button";
+import { SMS2FaButton } from "./sms/sms-button";
 
 export const TwoFactorList = () => {
   return (
@@ -24,7 +24,7 @@ export const TwoFactorList = () => {
         <TableRow>
           <TableCell>Email</TableCell>
           <TableCell className="flex justify-end">
-            <SetupEmail />
+            <Email2FaButton />
           </TableCell>
         </TableRow>
         <TableRow>
@@ -36,8 +36,7 @@ export const TwoFactorList = () => {
         <TableRow>
           <TableCell>SMS</TableCell>
           <TableCell className="flex justify-end">
-            {/* <SetupSMS /> */}
-            <div>Setup SMS</div>
+            <SMS2FaButton />
           </TableCell>
         </TableRow>
       </TableBody>

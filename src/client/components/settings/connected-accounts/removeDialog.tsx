@@ -24,12 +24,12 @@ export const UnlinkProviderDialog = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        {/* <Button asChild>
+        <Button asChild>
           <div>
             <span className="pr-1">Remove</span>
             <FaRegTrashAlt />
           </div>
-        </Button> */}
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

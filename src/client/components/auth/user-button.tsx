@@ -2,14 +2,12 @@
 
 import { FaUser } from "react-icons/fa";
 import { ExitIcon } from "@radix-ui/react-icons";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/client/components/ui/dropdown-menu";
-
 import {
   Avatar,
   AvatarImage,
@@ -27,9 +25,9 @@ export const UserButton = () => {
         <Button variant={"outline"} asChild className="h-14">
           <div className="flex flex-row">
             <Avatar>
-              <AvatarImage src={user?.image || ""} />
-              <AvatarFallback className="bg-sky-500">
-                <FaUser />
+              <AvatarImage src={user!.image.length > 2 ? user!.image : ""} />
+              <AvatarFallback>
+                {user!.image.length == 2 ? user!.image : <FaUser />}
               </AvatarFallback>
             </Avatar>
             <div className="self-center pl-5">

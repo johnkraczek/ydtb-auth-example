@@ -19,8 +19,9 @@ export const users = createTable("user", {
   id: text("id")
     .notNull()
     .primaryKey()
-    .$defaultFn(() => {
-      return uuidv4();
+    .$defaultFn((): string => {
+      const id = uuidv4();
+      return id;
     }),
   name: text("name"),
   email: text("email").notNull(),

@@ -1,4 +1,4 @@
-import { cn } from "~/client/components/utils"
+import { cn } from "~/client/components/utils";
 
 function Skeleton({
   className,
@@ -9,7 +9,11 @@ function Skeleton({
       className={cn("animate-pulse rounded-md bg-primary/10", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Skeleton }
+const SVGSkeleton = ({ className }: React.HTMLAttributes<HTMLDivElement>) => (
+  <svg className={className + " animate-pulse rounded bg-gray-300"} />
+);
+
+export { Skeleton, SVGSkeleton };

@@ -14,6 +14,7 @@ declare module "next-auth/jwt" {
     userRoles: UserRole[];
     isTwoFactorEnabled: boolean;
     isOAuth: boolean;
+    image: string;
   }
 }
 
@@ -22,6 +23,7 @@ declare module "next-auth" {
     user: {
       roles: UserRole[];
       isTwoFactorEnabled: boolean;
+      image: string;
     } & DefaultSession["user"];
   }
 }
@@ -39,6 +41,7 @@ export async function sessionCallback({
   session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
   session.user.name = token.name;
   session.user.email = token.email;
+  session.user.image = token.image;
   return session;
 }
 
@@ -48,6 +51,7 @@ export async function jwtCallback({ token }: { token: JWT }) {
   if (!user) return token;
   token.name = user.name;
   token.email = user.email;
+  token.image = user.image || "";
   token.userRoles = user.roles || [UserRole.USER];
   token.isTwoFactorEnabled = user.isTwoFactorEnabled || false;
   return token;

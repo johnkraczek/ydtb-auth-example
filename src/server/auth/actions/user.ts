@@ -4,7 +4,8 @@ import { UserRole } from "~/server/db/schemas/users/user-account";
 
 export const currentUser = async () => {
   const session = await auth();
-  return session?.user;
+  if (!session || !session.user) return false;
+  return session.user;
 };
 
 export const currentUserCanPerformAction = async (userID: string) => {

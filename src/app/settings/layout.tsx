@@ -33,6 +33,10 @@ const sidebarNavItems = [
     title: "Client Example",
     href: "/settings/client-example",
   },
+  {
+    title: "Update Info",
+    href: "/settings/settings-form",
+  },
 ];
 
 interface SettingsLayoutProps {

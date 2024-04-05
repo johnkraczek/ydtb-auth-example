@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
 import { users } from "~/server/db/schemas";
 import bcryptjs from "bcryptjs";
+import { currentUserCanPerformAction } from "~/server/auth/actions/user";
 
 export type User = Awaited<ReturnType<typeof getUserById>>;
 
@@ -130,22 +131,62 @@ export const setUserEmailAsVerified = async (email: string) => {
     .where(eq(users.email, email));
 };
 
-export const updateUserPass = async (id: string, password: string) => {
+/**
+ * function to be called to update the users pass.
+ * this should only be called serverside checking needs to be done
+ * prior to calling this function.
+ * @param userID
+ * @param password
+ * @returns
+ */
+
+export const updateUserPass = async (userID: string, password: string) => {
   const hashedPassword = await bcryptjs.hash(password, 10);
   return await db
     .update(users)
     .set({
       hashedPassword,
     })
-    .where(eq(users.id, id));
+    .where(eq(users.id, userID));
 };
 
 export const updateUserProfileImage = async ({
-  id,
+  userID,
   imgURL,
 }: {
-  id: string;
+  userID: string;
   imgURL: string;
 }) => {
-  await db.update(users).set({ image: imgURL }).where(eq(users.id, id));
+  if (!(await currentUserCanPerformAction(userID))) return;
+  await db.update(users).set({ image: imgURL }).where(eq(users.id, userID));
+};
+
+/**
+ * must be logged in to call this function.
+ *
+ * @param param0
+ * @returns
+ */
+export const updateUserData = async ({
+  userID,
+  values,
+}: {
+  userID: string;
+  values: Partial<typeof users.$inferSelect>;
+}) => {
+  if (!(await currentUserCanPerformAction(userID))) return;
+
+  // we want to only allow some fields to be updated.
+  // if values that are not updatable are passed then destructure
+  // them out of the object and return a new object without those.
+
+  const safeValues = (({
+    id,
+    hashedPassword,
+    isTwoFactorEnabled,
+    emailVerified,
+    ...values
+  }) => values)(values);
+
+  return await db.update(users).set(safeValues).where(eq(users.id, userID));
 };

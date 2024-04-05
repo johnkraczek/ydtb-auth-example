@@ -32,7 +32,7 @@ export const updateAccountProfileInfo = async ({
   if (user && user.id) {
     const eUser = await getUserById(user.id);
     if (!eUser?.image && profile.image) {
-      updateUserProfileImage({ id: user.id, imgURL: profile.image });
+      updateUserProfileImage({ userID: user.id, imgURL: profile.image });
     }
   }
 

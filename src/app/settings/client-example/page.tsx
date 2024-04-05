@@ -10,7 +10,7 @@ export default function ClientExample() {
       title="Client Example"
       label="This page was generated as a client component"
     >
-      <UserInfo label=" 🤷‍♂️ Client Component" user={user} />;
+      <UserInfo label=" 🤷‍♂️ Client Component" user={user} />
     </SettingPage>
   );
 }

@@ -18,7 +18,6 @@ export const SMS2FaButton = () => {
       const result = await userHasTwoFactorType({
         type: TWO_FA_TYPE.SMS,
       });
-      console.log(result);
       setHasEmail(result);
     });
   };

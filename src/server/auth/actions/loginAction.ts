@@ -103,7 +103,6 @@ export const loginAction = async (
         // handle sending the code via the chosen method
         let newToken;
         let message;
-        console.log("Method: ", method);
         if (method === "SMS") {
           newToken = await generateToken(
             existingUser.email,
@@ -117,7 +116,6 @@ export const loginAction = async (
             existingUser.email,
             TokenType.TWOFA_EMAIL_TOKEN,
           );
-          console.log("Send Email");
           sendTwoFactorConfEmail({
             email: existingUser.email,
             validationCode: newToken,
@@ -126,8 +124,6 @@ export const loginAction = async (
         }
         if (method === "AUTHENTICATOR") {
           //@TODO Add Authenticator 2fa type
-          console.log("Running Authenticator step");
-          console.log(method);
           message = "Get Code from Auth App";
         }
 
@@ -136,10 +132,8 @@ export const loginAction = async (
           message: message || "Success",
         };
       }
-      console.log("Method2: ", method);
       if (code) {
         if (method === "SMS" || method === "EMAIL") {
-          console.log("entering sms or email");
           const type =
             method == "EMAIL"
               ? TokenType.TWOFA_EMAIL_TOKEN

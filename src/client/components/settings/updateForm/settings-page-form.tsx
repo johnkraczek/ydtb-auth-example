@@ -47,7 +47,6 @@ export function SettingsPageForm() {
       if (!data) {
         return;
       }
-      console.log(data.image);
       setFormData(data);
       form.setValue("name", data.name || "");
       form.setValue("email", data.email);

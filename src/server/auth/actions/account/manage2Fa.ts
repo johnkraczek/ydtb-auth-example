@@ -64,7 +64,6 @@ export const validateFirstAuthCode = async (
   const validatedCode = TwoFaCodeSchema.safeParse(values);
 
   if (!validatedCode.success) {
-    console.log("fields not valid");
     return {
       success: false,
       message: "Invalid fields",
@@ -73,7 +72,6 @@ export const validateFirstAuthCode = async (
 
   const user = await currentUser();
   if (!user) {
-    console.log("invalid user");
     return {
       success: false,
       message: "Invalid Login To Link",

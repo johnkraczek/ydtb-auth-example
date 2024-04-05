@@ -98,9 +98,6 @@ export const removeTwoFactorMethod = async (
 ) => {
   if (!userID || !methodID || !(await currentUserCanPerformAction(userID)))
     return;
-
-  console.log("Deleting Method: ", methodID);
-
   await db
     .delete(twoFactorMethod)
     .where(

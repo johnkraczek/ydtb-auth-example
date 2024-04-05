@@ -21,7 +21,6 @@ export const Email2FaButton = () => {
       const result = await userHasTwoFactorType({
         type: TWO_FA_TYPE.EMAIL,
       });
-      console.log(result);
       setHasEmail(result);
     });
   };

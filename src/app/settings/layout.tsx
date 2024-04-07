@@ -18,6 +18,14 @@ const sidebarNavItems = [
     href: "/settings",
   },
   {
+    title: "Client Example",
+    href: "/settings/client-example",
+  },
+  {
+    title: "Update Info",
+    href: "/settings/settings-form",
+  },
+  {
     title: "2FA Methods",
     href: "/settings/two-factor",
   },
@@ -28,14 +36,6 @@ const sidebarNavItems = [
   {
     title: "Role Example",
     href: "/settings/role-example",
-  },
-  {
-    title: "Client Example",
-    href: "/settings/client-example",
-  },
-  {
-    title: "Update Info",
-    href: "/settings/settings-form",
   },
 ];
 

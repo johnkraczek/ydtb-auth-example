@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UserRole } from "~/server/db/schemas/users/user-account";
 
 export const profileFormSchema = z.object({
   name: z.string().optional(),
@@ -9,4 +10,14 @@ export const profileFormSchema = z.object({
     .email()
     .optional(),
   image: z.string().optional(),
+  role: z
+    .string()
+    .array()
+    .optional()
+    .refine((roleList) => {
+      if (!roleList || roleList?.length == 0) return true;
+      return Object.values(UserRole).some((role, i, list) => {
+        return !list.includes(role);
+      });
+    }),
 });

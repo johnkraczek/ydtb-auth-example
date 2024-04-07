@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { FieldErrors, SubmitErrorHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { profileFormSchema } from "~/validation/settings";
@@ -50,11 +50,7 @@ export function SettingsPageForm() {
       setFormData(data);
       form.setValue("name", data.name || "");
       form.setValue("email", data.email);
-      form.setValue("image", data.image || "", {
-        shouldDirty: true,
-        shouldTouch: true,
-        shouldValidate: true,
-      });
+      form.setValue("image", data.image || "");
     });
   };
 
@@ -69,14 +65,25 @@ export function SettingsPageForm() {
     },
   });
 
-  const submitfn = async (values: z.infer<typeof profileFormSchema>) => {
+  const SubmitForm = async (values: z.infer<typeof profileFormSchema>) => {
     const results = await SettingsFormAction(values);
-
     if (!results.success) {
       toast("Something Went Wrong Saving your Settings.");
     }
     toast("Your new info was submitted successfully. ");
     update();
+  };
+
+  const handleError = (
+    errors: FieldErrors<{
+      name?: string | undefined;
+      email?: string | undefined;
+      image?: string | undefined;
+      role?: string[] | undefined;
+    }>,
+  ) => {
+    toast("There was an error submitting your data.");
+    console.log(errors);
   };
 
   const reduceName = (name?: string) => {
@@ -88,7 +95,10 @@ export function SettingsPageForm() {
 
   return (
     <Form {...form}>
-      <form className="space-y-6" onSubmit={form.handleSubmit(submitfn)}>
+      <form
+        className="space-y-6"
+        onSubmit={form.handleSubmit(SubmitForm, handleError)}
+      >
         <FormField
           control={form.control}
           name="name"

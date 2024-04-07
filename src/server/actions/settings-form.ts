@@ -73,5 +73,6 @@ export const FetchSettingsFormData = async () => {
     emails: verifiedEmails,
     image: existingUser.image,
     images: images,
+    roles: existingUser.roles,
   };
 };

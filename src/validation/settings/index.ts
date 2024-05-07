@@ -2,6 +2,7 @@ import { z } from "zod";
 import { UserRole } from "~/server/db/schemas/users/user-account";
 
 export const profileFormSchema = z.object({
+  id: z.string().optional(),
   name: z.string().optional(),
   email: z
     .string({

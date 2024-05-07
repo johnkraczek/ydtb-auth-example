@@ -11,12 +11,15 @@ export const SettingsFormAction = async (
   values: z.infer<typeof profileFormSchema>,
 ): Promise<Result> => {
   const validatedFields = profileFormSchema.safeParse(values);
+
   if (!validatedFields.success) {
     return {
       success: false,
       message: "invalid fields",
     };
   }
+
+  const safeValues = (({ id, ...values }) => values)(validatedFields.data);
 
   const user = await currentUser();
   if (!user) {
@@ -36,12 +39,12 @@ export const SettingsFormAction = async (
 
   const result = updateUserData({
     userID: user.id!,
-    values,
+    values: safeValues,
   });
 
   return {
     success: true,
-    message: "default true ",
+    message: "default true",
   };
 };
 
@@ -68,6 +71,7 @@ export const FetchSettingsFormData = async () => {
   });
 
   return {
+    id: existingUser.id,
     name: existingUser.name,
     email: existingUser.email,
     emails: verifiedEmails,

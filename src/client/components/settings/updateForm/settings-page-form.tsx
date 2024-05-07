@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldErrors, SubmitErrorHandler, useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { profileFormSchema } from "~/validation/settings";
@@ -51,6 +51,7 @@ export function SettingsPageForm() {
       form.setValue("name", data.name || "");
       form.setValue("email", data.email);
       form.setValue("image", data.image || "");
+      form.setValue("id", data.id || "");
     });
   };
 
@@ -62,6 +63,7 @@ export function SettingsPageForm() {
       name: "",
       email: "",
       image: "",
+      id: "",
     },
   });
 
@@ -99,6 +101,27 @@ export function SettingsPageForm() {
         className="space-y-6"
         onSubmit={form.handleSubmit(SubmitForm, handleError)}
       >
+        <FormField
+          control={form.control}
+          name="id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>User ID</FormLabel>
+              {formData === null ? (
+                <Skeleton className="h-10 w-full" />
+              ) : (
+                <FormControl>
+                  <Input placeholder="" disabled {...field} />
+                </FormControl>
+              )}
+
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"

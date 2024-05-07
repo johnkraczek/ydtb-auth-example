@@ -2,6 +2,8 @@
 import { auth } from "~/server/auth";
 import { UserRole } from "~/server/db/schemas/users/user-account";
 
+export type User = Awaited<ReturnType<typeof currentUser>>;
+
 export const currentUser = async () => {
   const session = await auth();
   if (!session || !session.user) return false;

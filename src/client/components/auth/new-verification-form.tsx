@@ -18,7 +18,7 @@ export const NewVerificationForm = () => {
 
   const router = useRouter();
 
-  const onSubmit = useCallback(async () => {
+  const onValidation = useCallback(async () => {
     if (success || error) return;
     if (!token) {
       setError("Invalid or missing token");
@@ -29,11 +29,11 @@ export const NewVerificationForm = () => {
       token,
       TokenType.VERIFY_EMAIL_TOKEN,
     );
-    if (!isValid) {
-      setError("Invalid Token");
+    if (!isValid.success) {
+      setError("Invalid or Expired Token");
       return;
     }
-    if (isValid) {
+    if (isValid.success) {
       setSuccess("Success!");
       await sleep(2000);
       router.push("/login");
@@ -41,8 +41,8 @@ export const NewVerificationForm = () => {
   }, [token, success, error]);
 
   useEffect(() => {
-    onSubmit();
-  }, [onSubmit]);
+    onValidation();
+  }, [onValidation]);
 
   return (
     <CardWrapper
@@ -52,7 +52,7 @@ export const NewVerificationForm = () => {
       backButtonHref="/login"
     >
       <div className="flex w-full items-center justify-center pt-5">
-        <ShowSuccess message={success} />
+        {success && <ShowSuccess message={success} />}
         {!success && <ShowError message={error} />}
         {!success && !error && <BeatLoader />}
       </div>

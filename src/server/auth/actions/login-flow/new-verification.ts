@@ -10,11 +10,14 @@ export const newEmailVerification = async (
   token: string,
   email: string,
 ): Promise<Result> => {
+  console.log("Verifying Token2");
   const existingToken = await getTokenByToken(
     token,
     TokenType.VERIFY_EMAIL_TOKEN,
   );
+
   if (!existingToken) {
+    console.log("invalid expired token");
     return {
       success: false,
       message: "Invalid or expired token",
@@ -28,6 +31,8 @@ export const newEmailVerification = async (
       message: "Email not found",
     };
   }
+
+  console.log("Got here: ", token);
 
   await setUserEmailAsVerified(existingToken.email);
   await addEmailTwoFactor({ userID: user.id });

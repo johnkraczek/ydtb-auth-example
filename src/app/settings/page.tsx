@@ -10,7 +10,7 @@ export default async function SettingsProfilePage() {
       title="Settings Page"
       label="Basic user Account Information display"
     >
-      <UserInfo user={user} label="Your Info (Server Component)" />
+      <UserInfo user={user} />
     </SettingPage>
   );
 }

@@ -25,7 +25,7 @@ src/
 │   │   │   └── page.tsx
 │   │   ├── role-example
 │   │   │   └── page.tsx
-│   │   ├── server-example
+│   │   ├── settings-form
 │   │   │   └── page.tsx
 │   │   ├── two-factor
 │   │   │   └── page.tsx
@@ -37,7 +37,9 @@ src/
 │   ├── components
 │   │   ├── auth
 │   │   │   ├── login-flow
-│   │   │   │   └── login-step.tsx
+│   │   │   │   ├── confirm-token.tsx
+│   │   │   │   ├── login-step.tsx
+│   │   │   │   └── method-choice.tsx
 │   │   │   ├── login-form.tsx
 │   │   │   ├── logout-button.tsx
 │   │   │   ├── new-password-form.tsx
@@ -59,16 +61,39 @@ src/
 │   │   ├── nav
 │   │   │   └── sidebar-nav.tsx
 │   │   ├── settings
-│   │   │   └── default-settings.tsx
+│   │   │   ├── connected-accounts
+│   │   │   │   ├── accountList.tsx
+│   │   │   │   └── removeDialog.tsx
+│   │   │   ├── two-factor-methods
+│   │   │   │   ├── authenticator
+│   │   │   │   ├── email
+│   │   │   │   ├── sms
+│   │   │   │   ├── two-factor-list.tsx
+│   │   │   │   └── unlink-2fa-dialog.tsx
+│   │   │   ├── updateForm
+│   │   │   │   └── settings-page-form.tsx
+│   │   │   ├── default-settings.tsx
+│   │   │   └── user-info.tsx
 │   │   ├── ui
+│   │   │   ├── alert-dialog.tsx
 │   │   │   ├── avatar.tsx
+│   │   │   ├── badge.tsx
 │   │   │   ├── button.tsx
 │   │   │   ├── card.tsx
+│   │   │   ├── dialog.tsx
 │   │   │   ├── dropdown-menu.tsx
 │   │   │   ├── form.tsx
+│   │   │   ├── input-otp.tsx
 │   │   │   ├── input.tsx
 │   │   │   ├── label.tsx
-│   │   │   └── separator.tsx
+│   │   │   ├── radio-group.tsx
+│   │   │   ├── select.tsx
+│   │   │   ├── separator.tsx
+│   │   │   ├── skeleton.tsx
+│   │   │   ├── sonner.tsx
+│   │   │   ├── table.tsx
+│   │   │   ├── textarea.tsx
+│   │   │   └── tooltip.tsx
 │   │   └── utils.ts
 │   ├── hooks
 │   │   └── use-current-user.ts
@@ -76,16 +101,23 @@ src/
 │       └── global.css
 ├── server
 │   ├── actions
+│   │   └── settings-form.ts
 │   ├── auth
 │   │   ├── actions
+│   │   │   ├── account
+│   │   │   │   ├── manage2Fa.ts
+│   │   │   │   └── manageOAuth.ts
 │   │   │   ├── login-flow
 │   │   │   │   ├── new-verification.ts
 │   │   │   │   └── send-email-verification.ts
+│   │   │   ├── two-fa
+│   │   │   │   └── twoFactor.ts
 │   │   │   ├── loginAction.ts
 │   │   │   ├── logout.ts
 │   │   │   ├── new-password.ts
 │   │   │   ├── password-reset.ts
-│   │   │   └── registerAction.ts
+│   │   │   ├── registerAction.ts
+│   │   │   └── user.ts
 │   │   ├── config
 │   │   │   ├── auth-config.ts
 │   │   │   ├── callbacks.ts
@@ -94,14 +126,19 @@ src/
 │   │   ├── index.ts
 │   │   └── routes.ts
 │   ├── data
+│   │   ├── providers
+│   │   │   └── index.ts
 │   │   ├── tokens
 │   │   │   └── token.ts
+│   │   ├── two-fa-methods
+│   │   │   └── index.ts
 │   │   └── user
 │   │       └── index.ts
 │   ├── db
 │   │   ├── schemas
 │   │   │   ├── users
 │   │   │   │   ├── provider-account.ts
+│   │   │   │   ├── two-factor-methods.ts
 │   │   │   │   ├── user-account.ts
 │   │   │   │   └── user-token.ts
 │   │   │   └── index.ts
@@ -122,8 +159,10 @@ src/
 ├── types
 │   └── result.d.ts
 ├── validation
-│   └── auth
-│       └── index.js
+│   ├── auth
+│   │   └── index.ts
+│   └── settings
+│       └── index.ts
 ├── env.js
 └── middleware.ts
   
